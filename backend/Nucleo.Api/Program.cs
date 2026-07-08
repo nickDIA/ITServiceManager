@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Nucleo.Api.Common;
 using Nucleo.Api.Data;
@@ -8,8 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // ----------------------------------------------------------------------------
 // 1. MVC / Controllers
+//    Enums como string en JSON (p. ej. "EnReparacion" en vez de 1): más legible en
+//    Postman y consistente con cómo se guardan los enums en la BD (HasConversion<string>).
 // ----------------------------------------------------------------------------
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // ----------------------------------------------------------------------------
 // 2. Swagger / OpenAPI (UI para probar endpoints en el navegador, además de Postman)
@@ -31,11 +36,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // ----------------------------------------------------------------------------
 builder.Services.AddScoped(typeof(IRepositorio<>), typeof(Repositorio<>));
 builder.Services.AddScoped<IClienteRepositorio, ClienteRepositorio>();
+builder.Services.AddScoped<IActivoRepositorio, ActivoRepositorio>();
+builder.Services.AddScoped<IHistorialActivoRepositorio, HistorialActivoRepositorio>();
+
+// Unit of Work: da control transaccional explícito al Service (ver ActivoService.CambiarEstadoAsync).
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // ----------------------------------------------------------------------------
 // 5. Servicios de dominio
 // ----------------------------------------------------------------------------
 builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IActivoService, ActivoService>();
 
 // ----------------------------------------------------------------------------
 // 6. Manejo global de excepciones -> respuestas ProblemDetails

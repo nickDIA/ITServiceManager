@@ -5,11 +5,18 @@ namespace Nucleo.Api.Data;
 
 /// <summary>
 /// Siembra datos de prueba en tiempo de ejecución (solo en Development).
-/// Es idempotente: si ya hay clientes, no hace nada.
+/// Cada bloque es idempotente por separado (Clientes y Tecnicos se comprueban
+/// individualmente), para que agregar un seed nuevo no dependa de que la BD esté vacía.
 /// </summary>
 public static class DbSeeder
 {
     public static async Task SeedAsync(AppDbContext context, CancellationToken ct = default)
+    {
+        await SeedClientesAsync(context, ct);
+        await SeedTecnicosAsync(context, ct);
+    }
+
+    private static async Task SeedClientesAsync(AppDbContext context, CancellationToken ct)
     {
         if (await context.Clientes.AnyAsync(ct))
             return;
@@ -59,6 +66,23 @@ public static class DbSeeder
         };
 
         await context.Clientes.AddRangeAsync(clientes, ct);
+        await context.SaveChangesAsync(ct);
+    }
+
+    private static async Task SeedTecnicosAsync(AppDbContext context, CancellationToken ct)
+    {
+        if (await context.Tecnicos.AnyAsync(ct))
+            return;
+
+        // PasswordHash real (BCrypt) se genera en la Fase 3, cuando se implemente login.
+        var tecnicos = new List<Tecnico>
+        {
+            new() { Nombre = "Carlos Méndez", Email = "carlos.mendez@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Tecnico },
+            new() { Nombre = "Sofía Ramírez", Email = "sofia.ramirez@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Supervisor },
+            new() { Nombre = "Diego Torres", Email = "diego.torres@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Administrador }
+        };
+
+        await context.Tecnicos.AddRangeAsync(tecnicos, ct);
         await context.SaveChangesAsync(ct);
     }
 }
