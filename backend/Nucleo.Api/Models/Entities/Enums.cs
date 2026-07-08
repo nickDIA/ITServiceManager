@@ -38,7 +38,7 @@ public enum EstadoTicket
 /// <summary>Rol del técnico dentro del sistema (se usará para autorización con JWT en una fase posterior).</summary>
 public enum RolTecnico
 {
+    Admin,
     Tecnico,
-    Supervisor,
-    Administrador
+    Lector
 }

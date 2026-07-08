@@ -78,8 +78,8 @@ public static class DbSeeder
         var tecnicos = new List<Tecnico>
         {
             new() { Nombre = "Carlos Méndez", Email = "carlos.mendez@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Tecnico },
-            new() { Nombre = "Sofía Ramírez", Email = "sofia.ramirez@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Supervisor },
-            new() { Nombre = "Diego Torres", Email = "diego.torres@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Administrador }
+            new() { Nombre = "Sofía Ramírez", Email = "sofia.ramirez@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Lector },
+            new() { Nombre = "Diego Torres", Email = "diego.torres@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Admin }
         };
 
         await context.Tecnicos.AddRangeAsync(tecnicos, ct);
