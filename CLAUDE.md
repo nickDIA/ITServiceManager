@@ -33,6 +33,7 @@ No test project exists yet.
 **Stack notes (deviations from a generic ASP.NET tutorial, worth knowing before assuming otherwise):**
 - Target framework is **net10.0** (not net9) — that's what was available on the dev machine; EF Core packages are pinned to `10.0.9` to match.
 - Database is **SQL Server Express**, instance `.\SQLEXPRESS` (not LocalDB) — connection string lives in `appsettings.json` under `ConnectionStrings:NucleoDb`, Windows auth, database name `NucleoDb`.
+- **JWT signing key is NOT in `appsettings.json`** — only `Jwt:Issuer`/`Jwt:Audience`/`Jwt:ExpiresInMinutes` live there. The actual `Jwt:Key` is in `dotnet user-secrets` (run `dotnet user-secrets set "Jwt:Key" "<value>"` from `backend/Nucleo.Api`); `Program.cs` throws a clear startup error if it's missing. Seeded técnicos all share the demo password `Nucleo123!` (see `DbSeeder.PasswordDemoTecnicos`) — emails: `carlos.mendez@nucleo.mx` (Tecnico), `sofia.ramirez@nucleo.mx` (Lector), `diego.torres@nucleo.mx` (Admin).
 
 ## Architecture
 
@@ -58,7 +59,11 @@ See `ActivoService.CambiarEstadoAsync` for the full pattern — treat it as the 
 
 Valid `Activo` state transitions are defined once in `Domain/EstadoActivoTransiciones.cs` (a static lookup table), consulted by the service **before** opening a transaction. `Retirado` is a terminal state with no outgoing transitions.
 
-`TecnicoId` existence for a state change is intentionally **not** pre-validated in C# — it's enforced by the SQL Server FK constraint on `HistorialActivo.TecnicoId`. `ActivoService` catches the resulting `DbUpdateException` (SQL error 547), translates it to a 404 `RecursoNoEncontradoException`, and rolls back. This means sending a nonexistent `tecnicoId` is the organic, real way to reproduce a mid-transaction failure — not a synthetic test hook.
+`TecnicoId` existence for a state change is intentionally **not** pre-validated in C# — it's enforced by the SQL Server FK constraint on `HistorialActivo.TecnicoId`. `ActivoService` catches the resulting `DbUpdateException` (SQL error 547), translates it to a 404 `RecursoNoEncontradoException`, and rolls back. Since Fase 3, `tecnicoId` is no longer client-supplied (it's read from the JWT's `NameIdentifier` claim in `ActivosController.CambiarEstado`, not from `CambiarEstadoActivoDto`), so this FK-violation path is now a defensive backstop rather than the primary way to trigger it — reproducing the rollback deliberately requires deleting/tampering the técnico row directly (e.g. via `sqlcmd`) while a still-valid token references it.
+
+### Auth (Fase 3)
+
+JWT bearer auth, roles `Admin`/`Tecnico`/`Lector` (`Models/Entities/Enums.cs` → `RolTecnico`, string constants in `Common/Roles.cs`). `AuthController.Login` → `AuthService` (BCrypt.Verify against `Tecnico.PasswordHash`) → `ITokenService.GenerarToken` (claims: `NameIdentifier`=id, `Email`, `Name`, `Role`). `[Authorize]` at controller level on `ClientesController`/`ActivosController` (any authenticated técnico can read); `[Authorize(Roles = Roles.Escritura)]` on POST/PUT/DELETE/PATCH actions (`Lector` is read-only). `AuthController` itself has no `[Authorize]` — login must stay anonymous. Login failure (unknown email OR wrong password) throws `CredencialesInvalidasException` → 401, with the same generic message either way (doesn't leak whether the email exists).
 
 ### EF Core model conventions
 
@@ -70,5 +75,6 @@ Valid `Activo` state transitions are defined once in `Domain/EstadoActivoTransic
 ## Project state
 
 - **Fase 1 (done):** Cliente CRUD, base EF model for all 6 entities, generic repository, DI wiring, global exception handling.
-- **Fase 2 (in progress):** Activo CRUD, state machine, transactional state-change + audit trail, historial endpoint.
-- **Planned:** Ticket/Contrato CRUD, JWT + BCrypt auth (`Tecnico.PasswordHash` is currently a placeholder string, real hashing not yet wired up), Angular 19 frontend.
+- **Fase 2 (done):** Activo CRUD, state machine, transactional state-change + audit trail, historial endpoint.
+- **Fase 3 (done):** JWT auth + BCrypt, role-based `[Authorize]` on Cliente/Activo endpoints.
+- **Planned:** Ticket/Contrato CRUD + JOIN-heavy reports and aggregations (Fase 4), Angular 19 frontend (Fase 5-6). See `C:\Users\domin\Downloads\proyecto-nucleo-spec (1).md` for the full phase list — this project follows that spec, reconciled against choices made before it was shared (see project memory).
