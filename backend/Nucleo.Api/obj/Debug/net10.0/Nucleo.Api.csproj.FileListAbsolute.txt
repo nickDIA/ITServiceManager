@@ -160,3 +160,5 @@ C:\Users\domin\Documents\VSCODE\Angular\FXCN\backend\Nucleo.Api\obj\Debug\net10.
 C:\Users\domin\Documents\VSCODE\Angular\FXCN\backend\Nucleo.Api\obj\Debug\net10.0\Nucleo.Api.genruntimeconfig.cache
 C:\Users\domin\Documents\VSCODE\Angular\FXCN\backend\Nucleo.Api\obj\Debug\net10.0\ref\Nucleo.Api.dll
 C:\Users\domin\Documents\VSCODE\Angular\FXCN\backend\Nucleo.Api\obj\Debug\net10.0\Nucleo.Api.sourcelink.json
+C:\Users\domin\Documents\VSCODE\Angular\FXCN\backend\Nucleo.Api\bin\Debug\net10.0\BCrypt-Net-Next.dll
+C:\Users\domin\Documents\VSCODE\Angular\FXCN\backend\Nucleo.Api\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

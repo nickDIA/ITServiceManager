@@ -10,10 +10,14 @@ namespace Nucleo.Api.Data;
 /// </summary>
 public static class DbSeeder
 {
+    /// <summary>Contraseña demo compartida por los 3 técnicos sembrados (solo para pruebas locales).</summary>
+    public const string PasswordDemoTecnicos = "Nucleo123!";
+
     public static async Task SeedAsync(AppDbContext context, CancellationToken ct = default)
     {
         await SeedClientesAsync(context, ct);
         await SeedTecnicosAsync(context, ct);
+        await CorregirPasswordsPendientesAsync(context, ct);
     }
 
     private static async Task SeedClientesAsync(AppDbContext context, CancellationToken ct)
@@ -74,15 +78,36 @@ public static class DbSeeder
         if (await context.Tecnicos.AnyAsync(ct))
             return;
 
-        // PasswordHash real (BCrypt) se genera en la Fase 3, cuando se implemente login.
+        var hash = BCrypt.Net.BCrypt.HashPassword(PasswordDemoTecnicos);
         var tecnicos = new List<Tecnico>
         {
-            new() { Nombre = "Carlos Méndez", Email = "carlos.mendez@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Tecnico },
-            new() { Nombre = "Sofía Ramírez", Email = "sofia.ramirez@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Lector },
-            new() { Nombre = "Diego Torres", Email = "diego.torres@nucleo.mx", PasswordHash = "PENDIENTE_FASE_AUTH", Rol = RolTecnico.Admin }
+            new() { Nombre = "Carlos Méndez", Email = "carlos.mendez@nucleo.mx", PasswordHash = hash, Rol = RolTecnico.Tecnico },
+            new() { Nombre = "Sofía Ramírez", Email = "sofia.ramirez@nucleo.mx", PasswordHash = hash, Rol = RolTecnico.Lector },
+            new() { Nombre = "Diego Torres", Email = "diego.torres@nucleo.mx", PasswordHash = hash, Rol = RolTecnico.Admin }
         };
 
         await context.Tecnicos.AddRangeAsync(tecnicos, ct);
+        await context.SaveChangesAsync(ct);
+    }
+
+    /// <summary>
+    /// Red de seguridad idempotente: si algún técnico quedó con el placeholder de una fase
+    /// anterior a la implementación de auth, le asigna un hash BCrypt real. No-op una vez
+    /// aplicado (ningún técnico volverá a tener ese placeholder).
+    /// </summary>
+    private static async Task CorregirPasswordsPendientesAsync(AppDbContext context, CancellationToken ct)
+    {
+        var pendientes = await context.Tecnicos
+            .Where(t => t.PasswordHash == "PENDIENTE_FASE_AUTH")
+            .ToListAsync(ct);
+
+        if (pendientes.Count == 0)
+            return;
+
+        var hash = BCrypt.Net.BCrypt.HashPassword(PasswordDemoTecnicos);
+        foreach (var tecnico in pendientes)
+            tecnico.PasswordHash = hash;
+
         await context.SaveChangesAsync(ct);
     }
 }

@@ -99,7 +99,7 @@ public class ActivoService : IActivoService
         await _activoRepositorio.GuardarCambiosAsync(ct);
     }
 
-    public async Task<ActivoResponseDto> CambiarEstadoAsync(int id, CambiarEstadoActivoDto dto, CancellationToken ct = default)
+    public async Task<ActivoResponseDto> CambiarEstadoAsync(int id, CambiarEstadoActivoDto dto, int tecnicoId, CancellationToken ct = default)
     {
         var activo = await _activoRepositorio.ObtenerPorIdAsync(id, ct)
             ?? throw new RecursoNoEncontradoException("activo", id);
@@ -134,7 +134,7 @@ public class ActivoService : IActivoService
                 EstadoNuevo = dto.NuevoEstado,
                 Motivo = dto.Motivo.Trim(),
                 Fecha = DateTime.UtcNow,
-                TecnicoId = dto.TecnicoId
+                TecnicoId = tecnicoId
             };
             await _historialRepositorio.AgregarAsync(historial, ct);
             await _historialRepositorio.GuardarCambiosAsync(ct);
@@ -144,7 +144,7 @@ public class ActivoService : IActivoService
         catch (DbUpdateException ex) when (EsViolacionForeignKey(ex))
         {
             await _unitOfWork.RevertirTransaccionAsync(ct);
-            throw new RecursoNoEncontradoException("técnico", dto.TecnicoId);
+            throw new RecursoNoEncontradoException("técnico", tecnicoId);
         }
         catch
         {

@@ -1,5 +1,8 @@
+using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Nucleo.Api.Common;
 using Nucleo.Api.Data;
 using Nucleo.Api.Repositories;
@@ -38,6 +41,7 @@ builder.Services.AddScoped(typeof(IRepositorio<>), typeof(Repositorio<>));
 builder.Services.AddScoped<IClienteRepositorio, ClienteRepositorio>();
 builder.Services.AddScoped<IActivoRepositorio, ActivoRepositorio>();
 builder.Services.AddScoped<IHistorialActivoRepositorio, HistorialActivoRepositorio>();
+builder.Services.AddScoped<ITecnicoRepositorio, TecnicoRepositorio>();
 
 // Unit of Work: da control transaccional explícito al Service (ver ActivoService.CambiarEstadoAsync).
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -47,12 +51,43 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // ----------------------------------------------------------------------------
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IActivoService, ActivoService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // ----------------------------------------------------------------------------
 // 6. Manejo global de excepciones -> respuestas ProblemDetails
 // ----------------------------------------------------------------------------
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+
+// ----------------------------------------------------------------------------
+// 7. Autenticación JWT + autorización basada en roles (Admin/Tecnico/Lector).
+//    La clave de firma NO vive en appsettings.json: en Development sale de
+//    user-secrets (dotnet user-secrets set "Jwt:Key" "..."); en un despliegue real
+//    debería salir de una variable de entorno o un gestor de secretos.
+// ----------------------------------------------------------------------------
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException(
+        "Falta Jwt:Key. En desarrollo: dotnet user-secrets set \"Jwt:Key\" \"<valor>\" dentro de backend/Nucleo.Api.");
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(1)
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -72,7 +107,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// UseAuthentication ANTES de UseAuthorization: primero identifica quién es (valida el JWT
+// y puebla User.Claims), luego decide qué puede hacer ([Authorize]/[Authorize(Roles=...)]).
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

@@ -31,6 +31,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         {
             RecursoNoEncontradoException => (StatusCodes.Status404NotFound, "Recurso no encontrado"),
             ConflictoException => (StatusCodes.Status409Conflict, "Conflicto con el estado actual"),
+            CredencialesInvalidasException => (StatusCodes.Status401Unauthorized, "No autorizado"),
             _ => (StatusCodes.Status500InternalServerError, "Error interno del servidor")
         };
 

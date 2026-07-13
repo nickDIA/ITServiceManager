@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Nucleo.Api.Common;
 using Nucleo.Api.Models.DTOs;
 using Nucleo.Api.Services;
 
@@ -7,9 +9,11 @@ namespace Nucleo.Api.Controllers;
 /// <summary>
 /// Frontera HTTP de Cliente. Solo traduce HTTP &lt;-&gt; servicio: no contiene lógica de negocio
 /// ni toca EF. Las reglas de negocio viven en <see cref="IClienteService"/>.
+/// Requiere token (cualquier rol puede leer; escritura restringida a Admin/Tecnico).
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ClientesController : ControllerBase
 {
     private readonly IClienteService _service;
@@ -37,6 +41,7 @@ public class ClientesController : ControllerBase
 
     /// <summary>Crea un cliente.</summary>
     [HttpPost]
+    [Authorize(Roles = Roles.Escritura)]
     [ProducesResponseType(typeof(ClienteResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -48,6 +53,7 @@ public class ClientesController : ControllerBase
 
     /// <summary>Actualiza un cliente existente.</summary>
     [HttpPut("{id:int}")]
+    [Authorize(Roles = Roles.Escritura)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -60,6 +66,7 @@ public class ClientesController : ControllerBase
 
     /// <summary>Elimina un cliente.</summary>
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = Roles.Escritura)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

@@ -17,9 +17,10 @@ public interface IActivoService
     /// <summary>
     /// Cambia el estado de un activo. Valida la transición contra la máquina de estados,
     /// y registra el cambio en HistorialActivo dentro de la MISMA transacción: si el
-    /// registro de auditoría falla, el cambio de estado se revierte.
+    /// registro de auditoría falla, el cambio de estado se revierte. tecnicoId viene del
+    /// claim del JWT (lo resuelve el controller), no del DTO.
     /// </summary>
-    Task<ActivoResponseDto> CambiarEstadoAsync(int id, CambiarEstadoActivoDto dto, CancellationToken ct = default);
+    Task<ActivoResponseDto> CambiarEstadoAsync(int id, CambiarEstadoActivoDto dto, int tecnicoId, CancellationToken ct = default);
 
     Task<IReadOnlyList<HistorialActivoResponseDto>> ObtenerHistorialAsync(int activoId, CancellationToken ct = default);
 }
