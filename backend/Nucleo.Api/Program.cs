@@ -42,6 +42,11 @@ builder.Services.AddScoped<IClienteRepositorio, ClienteRepositorio>();
 builder.Services.AddScoped<IActivoRepositorio, ActivoRepositorio>();
 builder.Services.AddScoped<IHistorialActivoRepositorio, HistorialActivoRepositorio>();
 builder.Services.AddScoped<ITecnicoRepositorio, TecnicoRepositorio>();
+builder.Services.AddScoped<ITicketRepositorio, TicketRepositorio>();
+
+// Reportes: no mapea a una sola entidad (cruza Cliente/Activo/Ticket/Contrato), por eso
+// no es un IRepositorio<T> específico como los demás.
+builder.Services.AddScoped<IReporteRepositorio, ReporteRepositorio>();
 
 // Unit of Work: da control transaccional explícito al Service (ver ActivoService.CambiarEstadoAsync).
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -53,6 +58,8 @@ builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IActivoService, ActivoService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<IReporteService, ReporteService>();
 
 // ----------------------------------------------------------------------------
 // 6. Manejo global de excepciones -> respuestas ProblemDetails
