@@ -36,7 +36,12 @@ dotnet ef migrations add <Name> --project backend/Nucleo.Api/Nucleo.Api.csproj -
 dotnet ef database update --project backend/Nucleo.Api/Nucleo.Api.csproj --startup-project backend/Nucleo.Api/Nucleo.Api.csproj
 ```
 
-No test project exists yet.
+```
+# Tests (61 pruebas: Services con Moq + máquinas de estados) — la API NO debe estar corriendo (bloquea el .exe)
+dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
+```
+
+Tests cover the Service layer with mocked repositories (no DB) — see `docs/TESTING.md` for the full coverage map, the manual per-phase validation record, and the `SqlExceptionFactory` reflection helper used to fabricate SQL error 547 for the FK-rollback test.
 
 **Stack notes (deviations from a generic ASP.NET tutorial, worth knowing before assuming otherwise):**
 - Target framework is **net10.0** (not net9) — that's what was available on the dev machine; EF Core packages are pinned to `10.0.9` to match.
