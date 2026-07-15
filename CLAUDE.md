@@ -101,14 +101,23 @@ CORS is enabled (`AddCors`/`UseCors("Frontend")` in `Program.cs`) for `http://lo
 - Delete behaviors are deliberately mixed to avoid SQL Server's "multiple cascade paths" restriction: `Activo → HistorialActivo` is the only `Cascade`; `Tecnico → HistorialActivo` and `Cliente → (Activo/Ticket/Contrato)` are `Restrict`; the nullable `Ticket → Activo` FK is `SetNull`. When adding new FK relationships, check for cascade-path conflicts before defaulting to `Cascade`.
 - `DbSeeder.cs` seeds `Clientes` and `Tecnicos` **independently and idempotently** (each gated on its own `AnyAsync` check, not a single top-level check) — follow this pattern when adding new seed data so it isn't silently skipped just because some other table already has rows.
 
-### Frontend (Fase 5)
+### Frontend (Fase 5-6)
 
 Standalone Angular 19, no NgModules, no SSR. Structure under `frontend/src/app/`:
-- `core/services/auth.service.ts` — signal-based session state (`usuario` readonly signal, `estaAutenticado` computed). On construction, rehydrates the session from the JWT already in `localStorage` (`core/utils/jwt.util.ts` decodes the payload client-side, no signature check — that's the backend's job on every request) instead of calling the API again on page reload.
+- `core/services/auth.service.ts` — signal-based session state (`usuario` readonly signal; `estaAutenticado`/`puedeEscribir`/`esAdmin` computed). On construction, rehydrates the session from the JWT already in `localStorage` (`core/utils/jwt.util.ts` decodes the payload client-side, no signature check — that's the backend's job on every request) instead of calling the API again on page reload.
+- `core/services/nucleo-api.service.ts` — single HTTP client for the whole domain API; returns raw Observables so each component decides async pipe (lists) vs subscribe (one-off actions).
+- `core/models/nucleo.models.ts` — TS mirrors of the backend DTOs/enums, **including the two state-transition tables** (`TRANSICIONES_ACTIVO`/`TRANSICIONES_TICKET`). The frontend uses them only to render valid options; the backend remains the real validator (409 otherwise).
 - `core/interceptors/auth.interceptor.ts` — a functional `HttpInterceptorFn` that attaches `Authorization: Bearer <token>` **only** to requests whose URL starts with `environment.apiUrl` (never leaks the token to third-party requests).
 - `core/guards/auth.guard.ts` (`CanActivateFn`) and `core/guards/role.guard.ts` (a **factory** — `roleGuard(['Admin'])` — not a bare guard, since it needs a parameter). Both redirect via `router.createUrlTree(...)` rather than injecting `Router.navigate` imperatively.
-- `features/*` are lazy-loaded standalone components via `loadComponent` in `app.routes.ts` (not `loadChildren`/NgModules) — confirmed working by inspecting `ng build` output, which puts `login`/`dashboard`/`admin` in separate chunks from the initial bundle.
-- `dashboard` and `admin` are Fase 5 placeholders (prove the auth flow end-to-end: guard → interceptor → protected API call → role restriction); the real Cliente/Activo/Ticket feature UIs are Fase 6.
+- `features/*` are lazy-loaded standalone components via `loadComponent` in `app.routes.ts` (not `loadChildren`/NgModules) — each feature lands in its own chunk.
+
+Where each spec concept deliberately lives (Fase 6):
+- **async pipe**: `features/clientes` list (`clientes$ | async`); its mutations use imperative subscribe — the async-vs-subscribe contrast is intentional.
+- **effect**: `features/activos` — the cliente filter is a signal and an `effect` in the constructor reloads the list when it changes; the `<select>` only writes the signal. Note: mutations call an explicit `recargar()` because re-setting the same filter value doesn't retrigger the effect.
+- **computed**: `features/tickets` board — columns and per-column/global counters all derive from one `tickets` signal; mutations only `update()` that signal and everything re-renders (validated live: counters moved without reload). Also `features/dashboard`, which computes GROUP BY distributions client-side from raw lists, while financial metrics (ingresos/promedio/clientes sin tickets) still come from `GET /api/reportes/dashboard` since they cross tables the front doesn't load.
+- **Role-based UI**: write forms/buttons render only if `auth.puedeEscribir()`; the Admin nav link only if `esAdmin()`. This is UX only — the API's 403 remains the enforcement.
+
+`GET /api/tecnicos` (`TecnicosController`, read-only, added in Fase 6) exists solely to populate the ticket-assignment selector; `TecnicoResponseDto` never exposes `PasswordHash`.
 
 Run both servers together to develop against this (`dotnet run` + `npm start --prefix frontend`); a `.claude/launch.json` entry named `frontend` exists for the Browser-pane tooling.
 
@@ -119,4 +128,5 @@ Run both servers together to develop against this (`dotnet run` + `npm start --p
 - **Fase 3 (done):** JWT auth + BCrypt, role-based `[Authorize]` on all domain endpoints.
 - **Fase 4 (done):** Ticket CRUD + state machine, JOIN-based ticket listing, dashboard aggregations. Contrato/Ticket seed data added (both tables existed since the Fase 1 migration but were never seeded until now).
 - **Fase 5 (done):** Angular 19 project structure, JWT interceptor, `authGuard`/`roleGuard`, login screen. Validated end-to-end in a real browser (not just Postman) — this is what surfaced the CORS and `MapInboundClaims` issues documented above.
-- **Planned:** Fase 6 — real feature UIs (Clientes/Activos/Tickets lists+forms, dashboard with `computed` signals) replacing the current placeholders. See `C:\Users\domin\Downloads\proyecto-nucleo-spec (1).md` for the full phase list — this project follows that spec, reconciled against choices made before it was shared (see project memory).
+- **Fase 6 (done):** real feature UIs — Clientes (async pipe), Activos (effect-driven filter, state change + audit trail), Tickets kanban board and dashboard (computed signals), role-aware UI. All 6 planned phases complete; remaining ideas are the spec's stretch goals (SLA alerts, server-side pagination, SignalR, exports).
+- See `C:\Users\domin\Downloads\proyecto-nucleo-spec (1).md` for the original spec — this project follows it, reconciled against choices made before it was shared (see project memory).
