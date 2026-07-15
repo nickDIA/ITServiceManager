@@ -29,12 +29,17 @@ public class TokenService : ITokenService
         var minutos = jwtSection.GetValue("ExpiresInMinutes", 120);
         var expiraEn = DateTime.UtcNow.AddMinutes(minutos);
 
+        // Claims cortos (sub/email/name/role) en vez de los URIs largos de ClaimTypes.*:
+        // el frontend Angular decodifica el JWT para leer estos valores, y las claves
+        // estándar de JWT son mucho más limpias de consumir que los identificadores SOAP
+        // heredados (http://schemas.xmlsoap.org/...). RoleClaimType/NameClaimType se
+        // reconfiguran a juego en Program.cs para que [Authorize(Roles=...)] los reconozca.
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, tecnico.Id.ToString()),
-            new(ClaimTypes.Email, tecnico.Email),
-            new(ClaimTypes.Name, tecnico.Nombre),
-            new(ClaimTypes.Role, tecnico.Rol.ToString())
+            new(JwtRegisteredClaimNames.Sub, tecnico.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, tecnico.Email),
+            new("name", tecnico.Nombre),
+            new("role", tecnico.Rol.ToString())
         };
 
         var credenciales = new SigningCredentials(

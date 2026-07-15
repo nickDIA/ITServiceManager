@@ -81,6 +81,12 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        // Por default, JwtBearerHandler remapea "sub"/"role" a los URIs largos heredados
+        // de WS-Federation (p. ej. http://schemas.microsoft.com/ws/2008/06/identity/claims/role)
+        // aunque el token traiga los nombres cortos. Esto lo desactiva para que los claims
+        // lleguen tal cual los emitió TokenService, y coincidan con NameClaimType/RoleClaimType.
+        options.MapInboundClaims = false;
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -90,7 +96,11 @@ builder.Services
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(1)
+            ClockSkew = TimeSpan.FromMinutes(1),
+            // Debe coincidir con los claims cortos que emite TokenService ("sub"/"role"),
+            // si no [Authorize(Roles=...)] y User.Identity.Name no reconocerían esos claims.
+            NameClaimType = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub,
+            RoleClaimType = "role"
         };
     });
 

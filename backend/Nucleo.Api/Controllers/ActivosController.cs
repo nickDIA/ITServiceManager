@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -82,7 +83,7 @@ public class ActivosController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<ActivoResponseDto>> CambiarEstado(int id, [FromBody] CambiarEstadoActivoDto dto, CancellationToken ct)
     {
-        var tecnicoId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var tecnicoId = int.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
         return Ok(await _service.CambiarEstadoAsync(id, dto, tecnicoId, ct));
     }
 
