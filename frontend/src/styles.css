@@ -1,1 +1,167 @@
-/* You can add global styles to this file, and also import other style files */
+/* Estilos globales compartidos por las páginas de features. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f8f9fb;
+  color: #1f2430;
+}
+
+.page {
+  max-width: 1080px;
+  margin: 1.5rem auto;
+  padding: 0 1.5rem;
+}
+
+.page h1 {
+  font-size: 1.4rem;
+  margin-bottom: 0.25rem;
+}
+
+/* --------- tablas --------- */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  font-size: 0.9rem;
+}
+
+.tabla th {
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  background: #eef0f5;
+  font-weight: 600;
+}
+
+.tabla td {
+  padding: 0.55rem 0.8rem;
+  border-top: 1px solid #f0f1f4;
+  vertical-align: middle;
+}
+
+/* --------- badges de estado --------- */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #e5e7ef;
+  color: #3a4160;
+}
+
+.badge.Operativo, .badge.Abierto { background: #e2f4e6; color: #196a34; }
+.badge.EnReparacion, .badge.EnProgreso { background: #fdf1dc; color: #92600a; }
+.badge.EnAlmacen, .badge.Resuelto { background: #e2ecfc; color: #1c4e9e; }
+.badge.Retirado, .badge.Cerrado { background: #e7e7e9; color: #5a5a63; }
+.badge.Cancelado { background: #fbe4e4; color: #9c2323; }
+.badge.Critica { background: #fbe4e4; color: #9c2323; }
+.badge.Alta { background: #fdf1dc; color: #92600a; }
+
+/* --------- formularios --------- */
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.25rem;
+  align-items: end;
+}
+
+.formulario .campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.formulario label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #4a5065;
+}
+
+.formulario input,
+.formulario select,
+.formulario textarea,
+.filtros select,
+.motivo-input {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #cfd3de;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-family: inherit;
+}
+
+.formulario input:focus,
+.formulario select:focus,
+.formulario textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+.campo-error {
+  color: #c02626;
+  font-size: 0.75rem;
+}
+
+/* --------- botones --------- */
+.btn {
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #4f46e5;
+  color: #fff;
+}
+
+.btn:hover { background: #4038c7; }
+.btn:disabled { background: #b6b3d9; cursor: not-allowed; }
+
+.btn.secundario {
+  background: transparent;
+  color: #4f46e5;
+  border: 1px solid #4f46e5;
+}
+
+.btn.secundario:hover { background: #eef0fc; }
+
+.btn.peligro {
+  background: transparent;
+  color: #c02626;
+  border: 1px solid #d9a0a0;
+}
+
+.btn.peligro:hover { background: #fbe9e9; }
+
+.btn.mini {
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+}
+
+/* --------- avisos --------- */
+.aviso-error {
+  background: #fdecea;
+  color: #b02a2a;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 0.9rem;
+}
+
+.vacio {
+  color: #7a8095;
+  font-style: italic;
+  padding: 1rem 0;
+}

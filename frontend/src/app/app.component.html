@@ -1,6 +1,13 @@
 @if (authService.estaAutenticado()) {
   <nav class="navbar">
     <span class="brand">Núcleo</span>
+    <a routerLink="/dashboard" routerLinkActive="activo">Dashboard</a>
+    <a routerLink="/clientes" routerLinkActive="activo">Clientes</a>
+    <a routerLink="/activos" routerLinkActive="activo">Activos</a>
+    <a routerLink="/tickets" routerLinkActive="activo">Tickets</a>
+    @if (authService.esAdmin()) {
+      <a routerLink="/admin" routerLinkActive="activo">Admin</a>
+    }
     <span class="usuario">{{ authService.usuario()?.nombre }} · {{ authService.usuario()?.rol }}</span>
     <button (click)="cerrarSesion()">Cerrar sesión</button>
   </nav>

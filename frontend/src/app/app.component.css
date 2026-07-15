@@ -10,6 +10,24 @@
 
 .brand {
   font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.navbar a {
+  color: #b9b9d6;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+}
+
+.navbar a:hover {
+  color: #fff;
+}
+
+.navbar a.activo {
+  color: #fff;
+  background: #4f46e5;
 }
 
 .usuario {

@@ -1,0 +1,92 @@
+.tablero-page {
+  max-width: 1280px;
+}
+
+.contador-global {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4f46e5;
+  background: #eef0fc;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  vertical-align: middle;
+}
+
+.tablero {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.columna {
+  background: #eef0f5;
+  border-radius: 10px;
+  padding: 0.6rem;
+  min-height: 120px;
+}
+
+.columna-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.columna-contador {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #3a4160;
+  background: #fff;
+  border-radius: 99px;
+  padding: 0.05rem 0.5rem;
+}
+
+.tarjeta-ticket {
+  background: #fff;
+  border-radius: 8px;
+  padding: 0.6rem;
+  margin-bottom: 0.6rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+  font-size: 0.82rem;
+}
+
+.tarjeta-titulo {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.tarjeta-meta {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.3rem;
+  color: #555c72;
+}
+
+.tarjeta-detalle {
+  color: #6a7188;
+  font-size: 0.76rem;
+  margin-top: 0.15rem;
+}
+
+.tarjeta-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.columna-vacia {
+  color: #9aa0b4;
+  font-size: 0.8rem;
+  font-style: italic;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+@media (max-width: 1000px) {
+  .tablero {
+    grid-template-columns: 1fr 1fr;
+  }
+}

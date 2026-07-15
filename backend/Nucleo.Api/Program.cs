@@ -60,6 +60,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IReporteService, ReporteService>();
+builder.Services.AddScoped<ITecnicoService, TecnicoService>();
 
 // ----------------------------------------------------------------------------
 // 6. Manejo global de excepciones -> respuestas ProblemDetails

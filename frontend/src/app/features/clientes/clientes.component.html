@@ -1,0 +1,92 @@
+<div class="page">
+  <h1>Clientes</h1>
+
+  @if (error()) {
+    <div class="aviso-error">{{ error() }}</div>
+  }
+
+  @if (auth.puedeEscribir()) {
+    <form class="formulario" [formGroup]="form" (ngSubmit)="guardar()">
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" formControlName="nombre" />
+        @if (form.controls.nombre.invalid && form.controls.nombre.touched) {
+          <span class="campo-error">Mínimo 3 caracteres.</span>
+        }
+      </div>
+      <div class="campo">
+        <label for="rfc">RFC</label>
+        <input id="rfc" formControlName="rfc" placeholder="DNO950101AB1" />
+        @if (form.controls.rfc.invalid && form.controls.rfc.touched) {
+          <span class="campo-error">Formato de RFC inválido.</span>
+        }
+      </div>
+      <div class="campo">
+        <label for="contacto">Contacto</label>
+        <input id="contacto" formControlName="contacto" />
+      </div>
+      <div class="campo">
+        <label for="telefono">Teléfono</label>
+        <input id="telefono" formControlName="telefono" />
+      </div>
+      @if (editandoId() !== null) {
+        <div class="campo">
+          <label for="activo">¿Activo?</label>
+          <select id="activo" formControlName="activo">
+            <option [value]="true">Sí</option>
+            <option [value]="false">No</option>
+          </select>
+        </div>
+      }
+      <div class="campo">
+        <button class="btn" type="submit" [disabled]="guardando()">
+          {{ editandoId() === null ? 'Crear cliente' : 'Guardar cambios' }}
+        </button>
+      </div>
+      @if (editandoId() !== null) {
+        <div class="campo">
+          <button class="btn secundario" type="button" (click)="cancelarEdicion()">Cancelar</button>
+        </div>
+      }
+    </form>
+  }
+
+  <!-- Lista con async pipe: el template gestiona la suscripción -->
+  @if (clientes$ | async; as clientes) {
+    @if (clientes.length === 0) {
+      <p class="vacio">No hay clientes registrados.</p>
+    } @else {
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>RFC</th>
+            <th>Contacto</th>
+            <th>Teléfono</th>
+            <th>Estado</th>
+            @if (auth.puedeEscribir()) { <th></th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (cliente of clientes; track cliente.id) {
+            <tr>
+              <td>{{ cliente.nombre }}</td>
+              <td>{{ cliente.rfc }}</td>
+              <td>{{ cliente.contacto ?? '—' }}</td>
+              <td>{{ cliente.telefono ?? '—' }}</td>
+              <td><span class="badge" [class.Operativo]="cliente.activo">{{ cliente.activo ? 'Activo' : 'Inactivo' }}</span></td>
+              @if (auth.puedeEscribir()) {
+                <td>
+                  <button class="btn mini secundario" (click)="iniciarEdicion(cliente)">Editar</button>
+                  <button class="btn mini peligro" (click)="eliminar(cliente)">Eliminar</button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  } @else {
+    <p class="vacio">Cargando clientes…</p>
+  }
+</div>

@@ -1,39 +1,60 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { CurrencyPipe } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Activo, ReporteDashboard, Ticket } from '../../core/models/nucleo.models';
 import { AuthService } from '../../core/services/auth.service';
+import { NucleoApiService } from '../../core/services/nucleo-api.service';
 
-interface DashboardResumen {
-  clientesActivos: number;
-  ticketsAbiertos: number;
-}
-
+/**
+ * Dashboard con computed signals: las distribuciones de activos y tickets se derivan
+ * CLIENT-SIDE de las listas crudas (signals) — nadie recalcula contadores a mano.
+ * Las métricas financieras (ingresos, promedio de horas, clientes sin tickets) vienen
+ * del endpoint agregado del servidor, que cruza tablas que el front no carga.
+ */
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [CurrencyPipe, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  readonly authService = inject(AuthService);
+export class DashboardComponent {
+  private readonly api = inject(NucleoApiService);
+  readonly auth = inject(AuthService);
 
-  readonly resumen = signal<DashboardResumen | null>(null);
-  readonly cargando = signal(true);
+  readonly tickets = signal<Ticket[]>([]);
+  readonly activos = signal<Activo[]>([]);
+  readonly resumenServidor = signal<ReporteDashboard | null>(null);
   readonly error = signal<string | null>(null);
 
-  ngOnInit(): void {
-    // Llama a un endpoint protegido: si esto responde, el authInterceptor adjuntó el JWT
-    // correctamente y el backend lo validó (prueba end-to-end de la Fase 5).
-    this.http.get<DashboardResumen>(`${environment.apiUrl}/reportes/dashboard`).subscribe({
-      next: (r) => {
-        this.resumen.set(r);
-        this.cargando.set(false);
-      },
-      error: () => {
-        this.error.set('No se pudo cargar el dashboard.');
-        this.cargando.set(false);
-      }
+  // ------- Derivados con computed: se recalculan solos si cambian los signals base -------
+
+  readonly ticketsAbiertos = computed(
+    () => this.tickets().filter((t) => t.estado === 'Abierto' || t.estado === 'EnProgreso').length
+  );
+
+  readonly ticketsPorEstado = computed(() => this.agrupar(this.tickets(), (t) => t.estado));
+  readonly ticketsPorPrioridad = computed(() =>
+    this.agrupar(this.tickets().filter((t) => t.estado === 'Abierto' || t.estado === 'EnProgreso'), (t) => t.prioridad)
+  );
+  readonly activosPorEstado = computed(() => this.agrupar(this.activos(), (a) => a.estado));
+
+  readonly totalActivos = computed(() => this.activos().length);
+
+  constructor() {
+    this.api.obtenerTickets().subscribe({
+      next: (t) => this.tickets.set(t),
+      error: () => this.error.set('No se pudieron cargar los datos del dashboard.')
     });
+    this.api.obtenerActivos().subscribe((a) => this.activos.set(a));
+    this.api.obtenerDashboard().subscribe((r) => this.resumenServidor.set(r));
+  }
+
+  private agrupar<T>(items: T[], clave: (item: T) => string): { nombre: string; cantidad: number }[] {
+    const mapa = new Map<string, number>();
+    for (const item of items) {
+      const k = clave(item);
+      mapa.set(k, (mapa.get(k) ?? 0) + 1);
+    }
+    return [...mapa.entries()].map(([nombre, cantidad]) => ({ nombre, cantidad }));
   }
 }

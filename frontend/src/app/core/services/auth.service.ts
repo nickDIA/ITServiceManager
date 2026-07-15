@@ -24,6 +24,14 @@ export class AuthService {
   readonly usuario = this._usuario.asReadonly();
   readonly estaAutenticado = computed(() => this._usuario() !== null);
 
+  /** Espejo de Roles.Escritura del backend: Lector es de solo lectura (la API igual devuelve 403). */
+  readonly puedeEscribir = computed(() => {
+    const rol = this._usuario()?.rol;
+    return rol === 'Admin' || rol === 'Tecnico';
+  });
+
+  readonly esAdmin = computed(() => this._usuario()?.rol === 'Admin');
+
   login(credenciales: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, credenciales).pipe(
       tap((respuesta) => {

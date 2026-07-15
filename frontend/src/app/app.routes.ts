@@ -13,6 +13,21 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent)
   },
   {
+    path: 'clientes',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/clientes/clientes.component').then((m) => m.ClientesComponent)
+  },
+  {
+    path: 'activos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/activos/activos.component').then((m) => m.ActivosComponent)
+  },
+  {
+    path: 'tickets',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/tickets/tickets.component').then((m) => m.TicketsComponent)
+  },
+  {
     path: 'admin',
     canActivate: [authGuard, roleGuard(['Admin'])],
     loadComponent: () => import('./features/admin/admin.component').then((m) => m.AdminComponent)

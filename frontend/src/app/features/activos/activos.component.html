@@ -1,0 +1,162 @@
+<div class="page">
+  <h1>Activos</h1>
+
+  @if (error()) {
+    <div class="aviso-error">{{ error() }}</div>
+  }
+
+  <div class="formulario filtros">
+    <div class="campo">
+      <label for="filtro-cliente">Filtrar por cliente</label>
+      <select id="filtro-cliente" (change)="cambiarFiltro($any($event.target).value)">
+        <option value="">Todos los clientes</option>
+        @for (cliente of clientes(); track cliente.id) {
+          <option [value]="cliente.id">{{ cliente.nombre }}</option>
+        }
+      </select>
+    </div>
+    @if (auth.puedeEscribir()) {
+      <div class="campo">
+        <button class="btn" type="button" (click)="mostrandoForm.set(!mostrandoForm())">
+          {{ mostrandoForm() ? 'Ocultar formulario' : 'Nuevo activo' }}
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (mostrandoForm() && auth.puedeEscribir()) {
+    <form class="formulario" [formGroup]="form" (ngSubmit)="crear()">
+      <div class="campo">
+        <label for="a-cliente">Cliente</label>
+        <select id="a-cliente" formControlName="clienteId">
+          <option [value]="0" disabled>Selecciona…</option>
+          @for (cliente of clientes(); track cliente.id) {
+            <option [value]="cliente.id">{{ cliente.nombre }}</option>
+          }
+        </select>
+      </div>
+      <div class="campo">
+        <label for="a-tipo">Tipo</label>
+        <select id="a-tipo" formControlName="tipo">
+          @for (tipo of tiposActivo; track tipo) {
+            <option [value]="tipo">{{ tipo }}</option>
+          }
+        </select>
+      </div>
+      <div class="campo">
+        <label for="a-nombre">Nombre</label>
+        <input id="a-nombre" formControlName="nombre" />
+      </div>
+      <div class="campo">
+        <label for="a-serie">Número de serie</label>
+        <input id="a-serie" formControlName="numeroSerie" />
+      </div>
+      <div class="campo">
+        <label for="a-fecha">Fecha de adquisición</label>
+        <input id="a-fecha" type="date" formControlName="fechaAdquisicion" />
+      </div>
+      <div class="campo">
+        <button class="btn" type="submit">Crear activo</button>
+      </div>
+    </form>
+  }
+
+  @if (cargando()) {
+    <p class="vacio">Cargando activos…</p>
+  } @else if (activos().length === 0) {
+    <p class="vacio">No hay activos para este filtro.</p>
+  } @else {
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Cliente</th>
+          <th>Tipo</th>
+          <th>No. serie</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (activo of activos(); track activo.id) {
+          <tr>
+            <td>{{ activo.nombre }}</td>
+            <td>{{ activo.clienteNombre }}</td>
+            <td>{{ activo.tipo }}</td>
+            <td>{{ activo.numeroSerie }}</td>
+            <td><span class="badge {{ activo.estado }}">{{ activo.estado }}</span></td>
+            <td>
+              <button class="btn mini secundario" (click)="verHistorial(activo)">
+                {{ historialDe() === activo.id ? 'Ocultar historial' : 'Historial' }}
+              </button>
+              @if (auth.puedeEscribir() && transiciones[activo.estado].length > 0) {
+                <button class="btn mini" (click)="abrirCambioEstado(activo)">Cambiar estado</button>
+              }
+              @if (auth.puedeEscribir()) {
+                <button class="btn mini peligro" (click)="eliminar(activo)">Eliminar</button>
+              }
+            </td>
+          </tr>
+
+          @if (cambiandoEstadoDe()?.id === activo.id) {
+            <tr>
+              <td colspan="6">
+                <div class="formulario" style="margin: 0;">
+                  <div class="campo">
+                    <label>Nuevo estado (desde {{ activo.estado }})</label>
+                    <select (change)="nuevoEstado.set($any($event.target).value || null)">
+                      <option value="">Selecciona…</option>
+                      @for (estado of transiciones[activo.estado]; track estado) {
+                        <option [value]="estado">{{ estado }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="campo">
+                    <label>Motivo (mín. 5 caracteres — queda en la auditoría)</label>
+                    <input class="motivo-input" [(ngModel)]="motivo" [ngModelOptions]="{ standalone: true }" />
+                  </div>
+                  <div class="campo">
+                    <button class="btn mini" (click)="confirmarCambioEstado()"
+                            [disabled]="!nuevoEstado() || motivo.trim().length < 5">Confirmar</button>
+                  </div>
+                  <div class="campo">
+                    <button class="btn mini secundario" (click)="cambiandoEstadoDe.set(null)">Cancelar</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+
+          @if (historialDe() === activo.id) {
+            <tr>
+              <td colspan="6">
+                @if (historial().length === 0) {
+                  <p class="vacio">Este activo no tiene cambios de estado registrados.</p>
+                } @else {
+                  <table class="tabla">
+                    <thead>
+                      <tr><th>Fecha</th><th>Transición</th><th>Motivo</th><th>Técnico</th></tr>
+                    </thead>
+                    <tbody>
+                      @for (h of historial(); track h.id) {
+                        <tr>
+                          <td>{{ h.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+                          <td>
+                            <span class="badge {{ h.estadoAnterior }}">{{ h.estadoAnterior }}</span> →
+                            <span class="badge {{ h.estadoNuevo }}">{{ h.estadoNuevo }}</span>
+                          </td>
+                          <td>{{ h.motivo }}</td>
+                          <td>{{ h.tecnicoNombre }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                }
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  }
+</div>

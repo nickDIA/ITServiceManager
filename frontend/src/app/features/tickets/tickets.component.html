@@ -1,0 +1,107 @@
+<div class="page tablero-page">
+  <h1>Tickets <span class="contador-global">{{ totalAbiertos() }} abiertos</span></h1>
+
+  @if (error()) {
+    <div class="aviso-error">{{ error() }}</div>
+  }
+
+  @if (auth.puedeEscribir()) {
+    <button class="btn" style="margin-bottom: 1rem;" (click)="mostrandoForm.set(!mostrandoForm())">
+      {{ mostrandoForm() ? 'Ocultar formulario' : 'Nuevo ticket' }}
+    </button>
+  }
+
+  @if (mostrandoForm() && auth.puedeEscribir()) {
+    <form class="formulario" [formGroup]="form" (ngSubmit)="crear()">
+      <div class="campo">
+        <label for="t-cliente">Cliente</label>
+        <select id="t-cliente" formControlName="clienteId">
+          <option [value]="0" disabled>Selecciona…</option>
+          @for (cliente of clientes(); track cliente.id) {
+            <option [value]="cliente.id">{{ cliente.nombre }}</option>
+          }
+        </select>
+      </div>
+      <div class="campo">
+        <label for="t-activo">Activo (opcional)</label>
+        <select id="t-activo" formControlName="activoId">
+          <option [value]="null">Sin activo</option>
+          @for (activo of activosDelCliente(); track activo.id) {
+            <option [value]="activo.id">{{ activo.nombre }}</option>
+          }
+        </select>
+      </div>
+      <div class="campo">
+        <label for="t-titulo">Título</label>
+        <input id="t-titulo" formControlName="titulo" />
+      </div>
+      <div class="campo">
+        <label for="t-descripcion">Descripción</label>
+        <input id="t-descripcion" formControlName="descripcion" />
+      </div>
+      <div class="campo">
+        <label for="t-prioridad">Prioridad</label>
+        <select id="t-prioridad" formControlName="prioridad">
+          @for (prioridad of prioridades; track prioridad) {
+            <option [value]="prioridad">{{ prioridad }}</option>
+          }
+        </select>
+      </div>
+      <div class="campo">
+        <label for="t-tecnico">Técnico asignado</label>
+        <select id="t-tecnico" formControlName="tecnicoId">
+          <option [value]="0" disabled>Selecciona…</option>
+          @for (tecnico of tecnicos(); track tecnico.id) {
+            <option [value]="tecnico.id">{{ tecnico.nombre }}</option>
+          }
+        </select>
+      </div>
+      <div class="campo">
+        <button class="btn" type="submit">Crear ticket</button>
+      </div>
+    </form>
+  }
+
+  <div class="tablero">
+    @for (columna of columnas(); track columna.estado) {
+      <div class="columna">
+        <div class="columna-header">
+          <span class="badge {{ columna.estado }}">{{ columna.estado }}</span>
+          <!-- Contador derivado: se actualiza solo al mover tickets -->
+          <span class="columna-contador">{{ columna.tickets.length }}</span>
+        </div>
+
+        @for (ticket of columna.tickets; track ticket.id) {
+          <div class="tarjeta-ticket">
+            <div class="tarjeta-titulo">{{ ticket.titulo }}</div>
+            <div class="tarjeta-meta">
+              <span class="badge {{ ticket.prioridad }}">{{ ticket.prioridad }}</span>
+              <span>{{ ticket.clienteNombre }}</span>
+            </div>
+            @if (ticket.activoNombre) {
+              <div class="tarjeta-detalle">🖥 {{ ticket.activoNombre }}</div>
+            }
+            <div class="tarjeta-detalle">👤 {{ ticket.tecnicoNombre }}</div>
+            <div class="tarjeta-detalle">
+              {{ ticket.fechaCreacion | date: 'dd/MM/yyyy' }}
+              @if (ticket.fechaCierre) {
+                → cerrado {{ ticket.fechaCierre | date: 'dd/MM/yyyy' }}
+              }
+            </div>
+
+            @if (auth.puedeEscribir()) {
+              <div class="tarjeta-acciones">
+                @for (siguiente of transiciones[ticket.estado]; track siguiente) {
+                  <button class="btn mini" (click)="cambiarEstado(ticket, siguiente)">→ {{ siguiente }}</button>
+                }
+                <button class="btn mini peligro" (click)="eliminar(ticket)">✕</button>
+              </div>
+            }
+          </div>
+        } @empty {
+          <p class="columna-vacia">Sin tickets</p>
+        }
+      </div>
+    }
+  </div>
+</div>

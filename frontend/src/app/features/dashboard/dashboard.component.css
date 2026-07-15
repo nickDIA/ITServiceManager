@@ -1,51 +1,71 @@
-.page {
-  max-width: 720px;
-  margin: 2rem auto;
-  padding: 0 1.5rem;
-  font-family: system-ui, sans-serif;
-}
-
-.rol {
+.saludo {
   color: #666;
-  margin-top: -0.5rem;
+  margin-top: -0.25rem;
 }
 
 .metricas {
   display: flex;
-  gap: 1rem;
-  margin: 1.5rem 0;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin: 1.25rem 0;
 }
 
 .tarjeta {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.25rem 1.75rem;
+  padding: 1.1rem 1.5rem;
   border-radius: 10px;
-  background: #f4f5f7;
-  min-width: 140px;
+  background: #fff;
+  min-width: 150px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  text-decoration: none;
+  color: inherit;
+}
+
+a.tarjeta:hover {
+  outline: 2px solid #c7c4f4;
 }
 
 .numero {
-  font-size: 2rem;
+  font-size: 1.7rem;
   font-weight: 700;
   color: #4f46e5;
 }
 
 .etiqueta {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #555;
+  text-align: center;
 }
 
-.error {
-  color: #d32f2f;
+.distribuciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.9rem;
 }
 
-.nota {
-  margin-top: 2rem;
-  padding: 0.75rem 1rem;
-  background: #fff8e1;
-  border-left: 3px solid #f9a825;
-  font-size: 0.85rem;
-  color: #5d4b00;
+.panel {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.panel h2 {
+  font-size: 0.95rem;
+  margin: 0 0 0.7rem;
+  color: #3a4160;
+}
+
+.fila-dist {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+}
+
+.cantidad {
+  font-weight: 700;
+  color: #3a4160;
 }

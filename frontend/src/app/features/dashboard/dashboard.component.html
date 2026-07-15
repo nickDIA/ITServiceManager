@@ -1,26 +1,71 @@
 <div class="page">
-  <h1>Bienvenido, {{ authService.usuario()?.nombre }}</h1>
-  <p class="rol">Rol: {{ authService.usuario()?.rol }}</p>
+  <h1>Dashboard</h1>
+  <p class="saludo">Hola, {{ auth.usuario()?.nombre }} ({{ auth.usuario()?.rol }})</p>
 
-  @if (cargando()) {
-    <p>Cargando métricas…</p>
-  } @else if (error()) {
-    <p class="error">{{ error() }}</p>
-  } @else if (resumen()) {
-    <div class="metricas">
-      <div class="tarjeta">
-        <span class="numero">{{ resumen()!.clientesActivos }}</span>
-        <span class="etiqueta">Clientes activos</span>
-      </div>
-      <div class="tarjeta">
-        <span class="numero">{{ resumen()!.ticketsAbiertos }}</span>
-        <span class="etiqueta">Tickets abiertos</span>
-      </div>
-    </div>
+  @if (error()) {
+    <div class="aviso-error">{{ error() }}</div>
   }
 
-  <p class="nota">
-    Fase 5: estructura, autenticación y rutas protegidas. Las pantallas completas de
-    Clientes, Activos y Tickets llegan en la Fase 6.
-  </p>
+  <div class="metricas">
+    <a class="tarjeta" routerLink="/tickets">
+      <span class="numero">{{ ticketsAbiertos() }}</span>
+      <span class="etiqueta">Tickets abiertos</span>
+    </a>
+    <a class="tarjeta" routerLink="/activos">
+      <span class="numero">{{ totalActivos() }}</span>
+      <span class="etiqueta">Activos gestionados</span>
+    </a>
+    @if (resumenServidor(); as resumen) {
+      <a class="tarjeta" routerLink="/clientes">
+        <span class="numero">{{ resumen.clientesActivos }}</span>
+        <span class="etiqueta">Clientes activos</span>
+      </a>
+      <div class="tarjeta">
+        <span class="numero">{{ resumen.ingresosMensualesRecurrentes | currency: 'MXN' : 'symbol-narrow' : '1.0-0' }}</span>
+        <span class="etiqueta">Ingresos mensuales (retainers)</span>
+      </div>
+      <div class="tarjeta">
+        <span class="numero">{{ resumen.clientesSinTicketsAbiertos }}</span>
+        <span class="etiqueta">Clientes sin tickets abiertos</span>
+      </div>
+    }
+  </div>
+
+  <div class="distribuciones">
+    <div class="panel">
+      <h2>Tickets por estado</h2>
+      @for (grupo of ticketsPorEstado(); track grupo.nombre) {
+        <div class="fila-dist">
+          <span class="badge {{ grupo.nombre }}">{{ grupo.nombre }}</span>
+          <span class="cantidad">{{ grupo.cantidad }}</span>
+        </div>
+      } @empty {
+        <p class="vacio">Sin tickets.</p>
+      }
+    </div>
+
+    <div class="panel">
+      <h2>Abiertos por prioridad</h2>
+      @for (grupo of ticketsPorPrioridad(); track grupo.nombre) {
+        <div class="fila-dist">
+          <span class="badge {{ grupo.nombre }}">{{ grupo.nombre }}</span>
+          <span class="cantidad">{{ grupo.cantidad }}</span>
+        </div>
+      } @empty {
+        <p class="vacio">Sin tickets abiertos.</p>
+      }
+    </div>
+
+    <div class="panel">
+      <h2>Activos por estado</h2>
+      @for (grupo of activosPorEstado(); track grupo.nombre) {
+        <div class="fila-dist">
+          <span class="badge {{ grupo.nombre }}">{{ grupo.nombre }}</span>
+          <span class="cantidad">{{ grupo.cantidad }}</span>
+        </div>
+      } @empty {
+        <p class="vacio">Sin activos.</p>
+      }
+    </div>
+  </div>
 </div>
