@@ -1,0 +1,5 @@
+<div class="page">
+  <h1>Panel de Administración</h1>
+  <p>Solo visible para el rol <strong>Admin</strong> — si ves esto es porque roleGuard te dejó pasar.</p>
+  <p class="usuario">Sesión: {{ authService.usuario()?.nombre }} ({{ authService.usuario()?.rol }})</p>
+</div>

@@ -1,0 +1,10 @@
+@if (authService.estaAutenticado()) {
+  <nav class="navbar">
+    <span class="brand">Núcleo</span>
+    <span class="usuario">{{ authService.usuario()?.nombre }} · {{ authService.usuario()?.rol }}</span>
+    <button (click)="cerrarSesion()">Cerrar sesión</button>
+  </nav>
+}
+<main>
+  <router-outlet />
+</main>

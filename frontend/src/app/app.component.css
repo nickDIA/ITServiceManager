@@ -1,0 +1,32 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: #1a1a2e;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+}
+
+.brand {
+  font-weight: 700;
+}
+
+.usuario {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: #cfcfe8;
+}
+
+.navbar button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #4f46e5;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.navbar button:hover {
+  background: #4f46e5;
+}

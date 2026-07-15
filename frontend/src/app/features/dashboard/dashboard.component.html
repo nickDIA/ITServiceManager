@@ -1,0 +1,26 @@
+<div class="page">
+  <h1>Bienvenido, {{ authService.usuario()?.nombre }}</h1>
+  <p class="rol">Rol: {{ authService.usuario()?.rol }}</p>
+
+  @if (cargando()) {
+    <p>Cargando métricas…</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (resumen()) {
+    <div class="metricas">
+      <div class="tarjeta">
+        <span class="numero">{{ resumen()!.clientesActivos }}</span>
+        <span class="etiqueta">Clientes activos</span>
+      </div>
+      <div class="tarjeta">
+        <span class="numero">{{ resumen()!.ticketsAbiertos }}</span>
+        <span class="etiqueta">Tickets abiertos</span>
+      </div>
+    </div>
+  }
+
+  <p class="nota">
+    Fase 5: estructura, autenticación y rutas protegidas. Las pantallas completas de
+    Clientes, Activos y Tickets llegan en la Fase 6.
+  </p>
+</div>

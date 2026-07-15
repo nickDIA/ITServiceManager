@@ -106,6 +106,17 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+// ----------------------------------------------------------------------------
+// 8. CORS: el frontend Angular (ng serve, localhost:4200) es un origen distinto
+//    al de esta API (localhost:5112) -> el navegador exige el preflight/headers.
+// ----------------------------------------------------------------------------
+const string FrontendDevOrigin = "http://localhost:4200";
+builder.Services.AddCors(options =>
+    options.AddPolicy("Frontend", policy =>
+        policy.WithOrigins(FrontendDevOrigin)
+              .AllowAnyMethod()
+              .AllowAnyHeader()));
+
 var app = builder.Build();
 
 // El manejador de excepciones va primero para envolver todo el pipeline.
@@ -124,6 +135,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// UseCors va antes de Authentication/Authorization: el preflight OPTIONS de un origen
+// cruzado no lleva el JWT, así que debe resolverse antes de exigir autenticación.
+app.UseCors("Frontend");
 
 // UseAuthentication ANTES de UseAuthorization: primero identifica quién es (valida el JWT
 // y puebla User.Claims), luego decide qué puede hacer ([Authorize]/[Authorize(Roles=...)]).
