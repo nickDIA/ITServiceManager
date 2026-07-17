@@ -1,0 +1,877 @@
+{
+  ".claude/hooks/vexp-guard.sh": {
+    "mtime": 1784076112.1794615,
+    "ast_hash": "9cab1e64469d05e4ca8031aa738c494a",
+    "semantic_hash": "9cab1e64469d05e4ca8031aa738c494a"
+  },
+  ".claude/launch.json": {
+    "mtime": 1784075134.990609,
+    "ast_hash": "2b2c13ee7f592eb45ebec5d3ec8025f9",
+    "semantic_hash": "2b2c13ee7f592eb45ebec5d3ec8025f9"
+  },
+  ".claude/settings.json": {
+    "mtime": 1784076112.1827886,
+    "ast_hash": "7efbf5e403392f2938a8af0a9deb3f8d",
+    "semantic_hash": "7efbf5e403392f2938a8af0a9deb3f8d"
+  },
+  ".claude/settings.local.json": {
+    "mtime": 1782786623.251837,
+    "ast_hash": "f1cd60f3695d63ff466af43c4f9b1755",
+    "semantic_hash": "f1cd60f3695d63ff466af43c4f9b1755"
+  },
+  ".vexp/manifest.json": {
+    "mtime": 1783023359.328283,
+    "ast_hash": "95230a7b9d7402cf73755d0053b5eadb",
+    "semantic_hash": "95230a7b9d7402cf73755d0053b5eadb"
+  },
+  ".vscode/settings.json": {
+    "mtime": 1783023355.014751,
+    "ast_hash": "73e056678c25e32cd38f704e57767c79",
+    "semantic_hash": "73e056678c25e32cd38f704e57767c79"
+  },
+  "Nucleo.slnx": {
+    "mtime": 1784104002.1313474,
+    "ast_hash": "5e598b480aef5fcf0a8f3e4e8ba3d8e2",
+    "semantic_hash": "5e598b480aef5fcf0a8f3e4e8ba3d8e2"
+  },
+  "backend/Nucleo.Api.Tests/Domain/TransicionesTests.cs": {
+    "mtime": 1784104255.6933584,
+    "ast_hash": "8a4b60e5994e94a941cd427e43b02b15",
+    "semantic_hash": "8a4b60e5994e94a941cd427e43b02b15"
+  },
+  "backend/Nucleo.Api.Tests/Helpers/SqlExceptionFactory.cs": {
+    "mtime": 1784104115.1016715,
+    "ast_hash": "3cafb9b688ed32362716e4fcfc221f71",
+    "semantic_hash": "3cafb9b688ed32362716e4fcfc221f71"
+  },
+  "backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj": {
+    "mtime": 1784104007.6646106,
+    "ast_hash": "aaa9564913c20e31c7c898f8baad5f75",
+    "semantic_hash": "aaa9564913c20e31c7c898f8baad5f75"
+  },
+  "backend/Nucleo.Api.Tests/Services/ActivoServiceTests.cs": {
+    "mtime": 1784104162.820493,
+    "ast_hash": "798f8b0f1bf1f59fc0012b24647e23c6",
+    "semantic_hash": "798f8b0f1bf1f59fc0012b24647e23c6"
+  },
+  "backend/Nucleo.Api.Tests/Services/AuthServiceTests.cs": {
+    "mtime": 1784104218.2084415,
+    "ast_hash": "0a22b6adf4380227686ee595517b54cf",
+    "semantic_hash": "0a22b6adf4380227686ee595517b54cf"
+  },
+  "backend/Nucleo.Api.Tests/Services/ClienteServiceTests.cs": {
+    "mtime": 1784104094.2935321,
+    "ast_hash": "b93960b7d64e2087dbfa953da7d3e576",
+    "semantic_hash": "b93960b7d64e2087dbfa953da7d3e576"
+  },
+  "backend/Nucleo.Api.Tests/Services/ReporteServiceTests.cs": {
+    "mtime": 1784104232.0045724,
+    "ast_hash": "56ebc5d29f3c2ebabc382a6fcc6a2f7c",
+    "semantic_hash": "56ebc5d29f3c2ebabc382a6fcc6a2f7c"
+  },
+  "backend/Nucleo.Api.Tests/Services/TicketServiceTests.cs": {
+    "mtime": 1784104201.9781644,
+    "ast_hash": "876d1405ac6bcd510ae8e3635c5b8d50",
+    "semantic_hash": "876d1405ac6bcd510ae8e3635c5b8d50"
+  },
+  "backend/Nucleo.Api.Tests/bin/Debug/net10.0/Nucleo.Api.Tests.deps.json": {
+    "mtime": 1784104858.7335882,
+    "ast_hash": "c19c41a5bb7d95d9198fe9d080d14c35",
+    "semantic_hash": "c19c41a5bb7d95d9198fe9d080d14c35"
+  },
+  "backend/Nucleo.Api.Tests/bin/Debug/net10.0/Nucleo.Api.Tests.runtimeconfig.json": {
+    "mtime": 1784104858.780291,
+    "ast_hash": "5f3a2d98fc24aa854c5b9344a7a4d157",
+    "semantic_hash": "5f3a2d98fc24aa854c5b9344a7a4d157"
+  },
+  "backend/Nucleo.Api.Tests/bin/Debug/net10.0/Nucleo.Api.deps.json": {
+    "mtime": 1783971354.3000398,
+    "ast_hash": "bafbbec910d3444dd38f9a9c0e2a3ed7",
+    "semantic_hash": "bafbbec910d3444dd38f9a9c0e2a3ed7"
+  },
+  "backend/Nucleo.Api.Tests/bin/Debug/net10.0/Nucleo.Api.runtimeconfig.json": {
+    "mtime": 1783971354.3306875,
+    "ast_hash": "37595336dae30b037bd95e5047b95825",
+    "semantic_hash": "37595336dae30b037bd95e5047b95825"
+  },
+  "backend/Nucleo.Api.Tests/bin/Debug/net10.0/Nucleo.Api.staticwebassets.endpoints.json": {
+    "mtime": 1782785210.628414,
+    "ast_hash": "f44ca44dd881261586b84442f2201257",
+    "semantic_hash": "f44ca44dd881261586b84442f2201257"
+  },
+  "backend/Nucleo.Api.Tests/bin/Debug/net10.0/appsettings.Development.json": {
+    "mtime": 1782784763.881499,
+    "ast_hash": "804b473502a4c415cf75db61c56c32aa",
+    "semantic_hash": "804b473502a4c415cf75db61c56c32aa"
+  },
+  "backend/Nucleo.Api.Tests/bin/Debug/net10.0/appsettings.json": {
+    "mtime": 1783971184.474339,
+    "ast_hash": "e59083d0b76f91b379c7c4188cf38eaf",
+    "semantic_hash": "e59083d0b76f91b379c7c4188cf38eaf"
+  },
+  "backend/Nucleo.Api.Tests/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs": {
+    "mtime": 1784104850.4509604,
+    "ast_hash": "8479efdf06e2d26e053d27ffa6964185",
+    "semantic_hash": "8479efdf06e2d26e053d27ffa6964185"
+  },
+  "backend/Nucleo.Api.Tests/obj/Debug/net10.0/Nucleo.Api.Tests.AssemblyInfo.cs": {
+    "mtime": 1784143304.003042,
+    "ast_hash": "b58ebbe07cbd93c9dd55449c92dca26f",
+    "semantic_hash": "b58ebbe07cbd93c9dd55449c92dca26f"
+  },
+  "backend/Nucleo.Api.Tests/obj/Debug/net10.0/Nucleo.Api.Tests.GlobalUsings.g.cs": {
+    "mtime": 1784104294.5233786,
+    "ast_hash": "535736b170e2841ba51152623818eddd",
+    "semantic_hash": "535736b170e2841ba51152623818eddd"
+  },
+  "backend/Nucleo.Api.Tests/obj/Debug/net10.0/Nucleo.Api.Tests.sourcelink.json": {
+    "mtime": 1784142321.4156032,
+    "ast_hash": "86c70a4b6257fe358270e524c1246d1d",
+    "semantic_hash": "86c70a4b6257fe358270e524c1246d1d"
+  },
+  "backend/Nucleo.Api.Tests/obj/Nucleo.Api.Tests.csproj.nuget.dgspec.json": {
+    "mtime": 1784104294.320472,
+    "ast_hash": "1404c275445e740b6d05dd8350a85d52",
+    "semantic_hash": "1404c275445e740b6d05dd8350a85d52"
+  },
+  "backend/Nucleo.Api.Tests/obj/project.assets.json": {
+    "mtime": 1784104007.6759377,
+    "ast_hash": "614bc28fb8cb3a5b33819582bdac618b",
+    "semantic_hash": "614bc28fb8cb3a5b33819582bdac618b"
+  },
+  "backend/Nucleo.Api/Common/Exceptions/ConflictoException.cs": {
+    "mtime": 1782785126.4110203,
+    "ast_hash": "e7ca279ea7fe75ae21debd29c38db7ed",
+    "semantic_hash": "e7ca279ea7fe75ae21debd29c38db7ed"
+  },
+  "backend/Nucleo.Api/Common/Exceptions/CredencialesInvalidasException.cs": {
+    "mtime": 1783971069.6208956,
+    "ast_hash": "e9267b9e280ac0f705e755092145f929",
+    "semantic_hash": "e9267b9e280ac0f705e755092145f929"
+  },
+  "backend/Nucleo.Api/Common/Exceptions/RecursoNoEncontradoException.cs": {
+    "mtime": 1782785124.5216744,
+    "ast_hash": "70df2e06c9935d9dbd499ffd34d18bd6",
+    "semantic_hash": "70df2e06c9935d9dbd499ffd34d18bd6"
+  },
+  "backend/Nucleo.Api/Common/GlobalExceptionHandler.cs": {
+    "mtime": 1783971102.6209028,
+    "ast_hash": "ca190fb6e3450598871492e42e330ad1",
+    "semantic_hash": "ca190fb6e3450598871492e42e330ad1"
+  },
+  "backend/Nucleo.Api/Common/Roles.cs": {
+    "mtime": 1783971072.2133465,
+    "ast_hash": "394cf91720c0aca9589fc5adc821ac0e",
+    "semantic_hash": "394cf91720c0aca9589fc5adc821ac0e"
+  },
+  "backend/Nucleo.Api/Controllers/ActivosController.cs": {
+    "mtime": 1784073930.0889907,
+    "ast_hash": "8cd1b771ce962f947e19d2a731fffa86",
+    "semantic_hash": "8cd1b771ce962f947e19d2a731fffa86"
+  },
+  "backend/Nucleo.Api/Controllers/AuthController.cs": {
+    "mtime": 1784074265.2578902,
+    "ast_hash": "04a47c986322d413c1989c400bf92819",
+    "semantic_hash": "04a47c986322d413c1989c400bf92819"
+  },
+  "backend/Nucleo.Api/Controllers/ClientesController.cs": {
+    "mtime": 1783971149.6105673,
+    "ast_hash": "ee18621e4703683a0fbe495cca8a0d3b",
+    "semantic_hash": "ee18621e4703683a0fbe495cca8a0d3b"
+  },
+  "backend/Nucleo.Api/Controllers/ReportesController.cs": {
+    "mtime": 1784056036.6167867,
+    "ast_hash": "317b711a65278776a3776bc46cc2911b",
+    "semantic_hash": "317b711a65278776a3776bc46cc2911b"
+  },
+  "backend/Nucleo.Api/Controllers/TecnicosController.cs": {
+    "mtime": 1784106051.2351046,
+    "ast_hash": "9dcb5e0a3ac8381bfb31b2e013afb2cd",
+    "semantic_hash": "9dcb5e0a3ac8381bfb31b2e013afb2cd"
+  },
+  "backend/Nucleo.Api/Controllers/TicketsController.cs": {
+    "mtime": 1784055974.0496511,
+    "ast_hash": "a1bbede3076fa1eb730bf0a43851fbd2",
+    "semantic_hash": "a1bbede3076fa1eb730bf0a43851fbd2"
+  },
+  "backend/Nucleo.Api/Data/AppDbContext.cs": {
+    "mtime": 1782785074.0159132,
+    "ast_hash": "8eeec3f1b6fb0f96f86d4c394a3940ec",
+    "semantic_hash": "8eeec3f1b6fb0f96f86d4c394a3940ec"
+  },
+  "backend/Nucleo.Api/Data/Configurations/ActivoConfiguration.cs": {
+    "mtime": 1782785048.1385782,
+    "ast_hash": "970f46d3d848d0bf313f597d31add861",
+    "semantic_hash": "970f46d3d848d0bf313f597d31add861"
+  },
+  "backend/Nucleo.Api/Data/Configurations/ClienteConfiguration.cs": {
+    "mtime": 1782785041.554198,
+    "ast_hash": "9b53702220ebbc7d5e3f7f52b1bc203a",
+    "semantic_hash": "9b53702220ebbc7d5e3f7f52b1bc203a"
+  },
+  "backend/Nucleo.Api/Data/Configurations/ContratoConfiguration.cs": {
+    "mtime": 1782785065.0798368,
+    "ast_hash": "c0a9ee69e02cc826a2f80f218bf74423",
+    "semantic_hash": "c0a9ee69e02cc826a2f80f218bf74423"
+  },
+  "backend/Nucleo.Api/Data/Configurations/HistorialActivoConfiguration.cs": {
+    "mtime": 1782785055.248474,
+    "ast_hash": "0c433571cdaf19960cf5e87d92f048e5",
+    "semantic_hash": "0c433571cdaf19960cf5e87d92f048e5"
+  },
+  "backend/Nucleo.Api/Data/Configurations/TecnicoConfiguration.cs": {
+    "mtime": 1782785069.3086498,
+    "ast_hash": "e5e97b7f78615be85032465c68205b4c",
+    "semantic_hash": "e5e97b7f78615be85032465c68205b4c"
+  },
+  "backend/Nucleo.Api/Data/Configurations/TicketConfiguration.cs": {
+    "mtime": 1782785061.3094451,
+    "ast_hash": "dca7775785173f6eb6fc4b1dd76435ba",
+    "semantic_hash": "dca7775785173f6eb6fc4b1dd76435ba"
+  },
+  "backend/Nucleo.Api/Data/DbSeeder.cs": {
+    "mtime": 1784056061.3771806,
+    "ast_hash": "164b1292c15e7fdd9a8de4246b3e1f29",
+    "semantic_hash": "164b1292c15e7fdd9a8de4246b3e1f29"
+  },
+  "backend/Nucleo.Api/Data/Migrations/20260630020914_InicialNucleo.Designer.cs": {
+    "mtime": 1782785355.01014,
+    "ast_hash": "d6214cc18324fc4fa6d6731c0ae056bf",
+    "semantic_hash": "d6214cc18324fc4fa6d6731c0ae056bf"
+  },
+  "backend/Nucleo.Api/Data/Migrations/20260630020914_InicialNucleo.cs": {
+    "mtime": 1782785355.01014,
+    "ast_hash": "88d69cc4b1112293aed2491b39964cde",
+    "semantic_hash": "88d69cc4b1112293aed2491b39964cde"
+  },
+  "backend/Nucleo.Api/Data/Migrations/AppDbContextModelSnapshot.cs": {
+    "mtime": 1782785355.0111368,
+    "ast_hash": "3d0a4cd046487b659a8f040c661e8889",
+    "semantic_hash": "3d0a4cd046487b659a8f040c661e8889"
+  },
+  "backend/Nucleo.Api/Domain/EstadoActivoTransiciones.cs": {
+    "mtime": 1783018032.7998054,
+    "ast_hash": "2b516d2e04b27d7efd6ff8f5fa46a491",
+    "semantic_hash": "2b516d2e04b27d7efd6ff8f5fa46a491"
+  },
+  "backend/Nucleo.Api/Domain/EstadoTicketTransiciones.cs": {
+    "mtime": 1784055912.1423614,
+    "ast_hash": "17eb7af88945d6372ea5b7934d64b7cb",
+    "semantic_hash": "17eb7af88945d6372ea5b7934d64b7cb"
+  },
+  "backend/Nucleo.Api/Models/DTOs/ActivoResponseDto.cs": {
+    "mtime": 1783018042.9970303,
+    "ast_hash": "e86642ff7e11e317b41a358efead1a12",
+    "semantic_hash": "e86642ff7e11e317b41a358efead1a12"
+  },
+  "backend/Nucleo.Api/Models/DTOs/ActualizarActivoDto.cs": {
+    "mtime": 1783018041.1393473,
+    "ast_hash": "0a67d010545be501656e15a94cb7167b",
+    "semantic_hash": "0a67d010545be501656e15a94cb7167b"
+  },
+  "backend/Nucleo.Api/Models/DTOs/ActualizarClienteDto.cs": {
+    "mtime": 1782785118.8710172,
+    "ast_hash": "764878524c2bff40d5cdf1be94e51104",
+    "semantic_hash": "764878524c2bff40d5cdf1be94e51104"
+  },
+  "backend/Nucleo.Api/Models/DTOs/ActualizarTicketDto.cs": {
+    "mtime": 1784055923.3077385,
+    "ast_hash": "1c6ba4c444c991a87167a121c3b534b9",
+    "semantic_hash": "1c6ba4c444c991a87167a121c3b534b9"
+  },
+  "backend/Nucleo.Api/Models/DTOs/CambiarEstadoActivoDto.cs": {
+    "mtime": 1783971107.699758,
+    "ast_hash": "691c630fb0338585ff7ccc766ad2bc0d",
+    "semantic_hash": "691c630fb0338585ff7ccc766ad2bc0d"
+  },
+  "backend/Nucleo.Api/Models/DTOs/CambiarEstadoTicketDto.cs": {
+    "mtime": 1784055925.1000335,
+    "ast_hash": "944c03ce5020e2441340a3b6faf69ff7",
+    "semantic_hash": "944c03ce5020e2441340a3b6faf69ff7"
+  },
+  "backend/Nucleo.Api/Models/DTOs/ClienteResponseDto.cs": {
+    "mtime": 1782785121.723182,
+    "ast_hash": "fed2885c6fdc0af7eccca3961f5b5f69",
+    "semantic_hash": "fed2885c6fdc0af7eccca3961f5b5f69"
+  },
+  "backend/Nucleo.Api/Models/DTOs/CrearActivoDto.cs": {
+    "mtime": 1783018037.1372657,
+    "ast_hash": "fe4231745fcd24b1f423d086486e7238",
+    "semantic_hash": "fe4231745fcd24b1f423d086486e7238"
+  },
+  "backend/Nucleo.Api/Models/DTOs/CrearClienteDto.cs": {
+    "mtime": 1782785114.662373,
+    "ast_hash": "de9d9a90f6fe14922394d3f0311b9121",
+    "semantic_hash": "de9d9a90f6fe14922394d3f0311b9121"
+  },
+  "backend/Nucleo.Api/Models/DTOs/CrearTicketDto.cs": {
+    "mtime": 1784055919.6688683,
+    "ast_hash": "12e2cc7dea63be401d77fc2f32057208",
+    "semantic_hash": "12e2cc7dea63be401d77fc2f32057208"
+  },
+  "backend/Nucleo.Api/Models/DTOs/HistorialActivoResponseDto.cs": {
+    "mtime": 1783018048.1217563,
+    "ast_hash": "ae02a8d1b324ef76068b869f1dd310d5",
+    "semantic_hash": "ae02a8d1b324ef76068b869f1dd310d5"
+  },
+  "backend/Nucleo.Api/Models/DTOs/LoginDto.cs": {
+    "mtime": 1783971074.6718254,
+    "ast_hash": "26fbb54f5a386016bf2dc52671d5dc6d",
+    "semantic_hash": "26fbb54f5a386016bf2dc52671d5dc6d"
+  },
+  "backend/Nucleo.Api/Models/DTOs/LoginResponseDto.cs": {
+    "mtime": 1783971075.8592093,
+    "ast_hash": "22993d14d78f29028bd8f76d331da1d7",
+    "semantic_hash": "22993d14d78f29028bd8f76d331da1d7"
+  },
+  "backend/Nucleo.Api/Models/DTOs/ReporteDashboardDto.cs": {
+    "mtime": 1784056026.52296,
+    "ast_hash": "7f5e40b7d379f9556ef9f616473b9334",
+    "semantic_hash": "7f5e40b7d379f9556ef9f616473b9334"
+  },
+  "backend/Nucleo.Api/Models/DTOs/TecnicoResponseDto.cs": {
+    "mtime": 1784106041.742271,
+    "ast_hash": "7505cabb35bacc0a7fa9004b0ab7b866",
+    "semantic_hash": "7505cabb35bacc0a7fa9004b0ab7b866"
+  },
+  "backend/Nucleo.Api/Models/DTOs/TicketResponseDto.cs": {
+    "mtime": 1784055927.9088297,
+    "ast_hash": "75a6cc6cc715d67f1ad59ad5ff0e2190",
+    "semantic_hash": "75a6cc6cc715d67f1ad59ad5ff0e2190"
+  },
+  "backend/Nucleo.Api/Models/Entities/Activo.cs": {
+    "mtime": 1782785016.0247874,
+    "ast_hash": "4f1dabe79a9931350abe06155369a39f",
+    "semantic_hash": "4f1dabe79a9931350abe06155369a39f"
+  },
+  "backend/Nucleo.Api/Models/Entities/Cliente.cs": {
+    "mtime": 1782785012.7271688,
+    "ast_hash": "c48b724e78481378975f5282ded83ac4",
+    "semantic_hash": "c48b724e78481378975f5282ded83ac4"
+  },
+  "backend/Nucleo.Api/Models/Entities/Contrato.cs": {
+    "mtime": 1782785026.3901682,
+    "ast_hash": "2e4329e229f53fa91f536eac5182bfbb",
+    "semantic_hash": "2e4329e229f53fa91f536eac5182bfbb"
+  },
+  "backend/Nucleo.Api/Models/Entities/Enums.cs": {
+    "mtime": 1784055904.036188,
+    "ast_hash": "b10c834822ba6486ed37a98c2635d4ff",
+    "semantic_hash": "b10c834822ba6486ed37a98c2635d4ff"
+  },
+  "backend/Nucleo.Api/Models/Entities/HistorialActivo.cs": {
+    "mtime": 1782785019.3269868,
+    "ast_hash": "0a38a9c0cb6777168d731340741e0f1a",
+    "semantic_hash": "0a38a9c0cb6777168d731340741e0f1a"
+  },
+  "backend/Nucleo.Api/Models/Entities/Tecnico.cs": {
+    "mtime": 1782785029.6677527,
+    "ast_hash": "92f0255f3d9d6b63dd50b27626090861",
+    "semantic_hash": "92f0255f3d9d6b63dd50b27626090861"
+  },
+  "backend/Nucleo.Api/Models/Entities/Ticket.cs": {
+    "mtime": 1782785023.558587,
+    "ast_hash": "11c6fab2d04814d705ebc3f066102219",
+    "semantic_hash": "11c6fab2d04814d705ebc3f066102219"
+  },
+  "backend/Nucleo.Api/Nucleo.Api.csproj": {
+    "mtime": 1783971004.8197947,
+    "ast_hash": "f993abe85d881cf2dbf34cb0b7577cc3",
+    "semantic_hash": "f993abe85d881cf2dbf34cb0b7577cc3"
+  },
+  "backend/Nucleo.Api/Program.cs": {
+    "mtime": 1784106052.8556507,
+    "ast_hash": "8369ad8c5a63a016516177fbabc2fa4b",
+    "semantic_hash": "8369ad8c5a63a016516177fbabc2fa4b"
+  },
+  "backend/Nucleo.Api/Properties/launchSettings.json": {
+    "mtime": 1782784763.878044,
+    "ast_hash": "53a0457824b5ade4ad9ec238a7b50ba1",
+    "semantic_hash": "53a0457824b5ade4ad9ec238a7b50ba1"
+  },
+  "backend/Nucleo.Api/Repositories/ActivoRepositorio.cs": {
+    "mtime": 1783018057.7195952,
+    "ast_hash": "0f575db06bd1e9ecf4eb5e8738eb96b9",
+    "semantic_hash": "0f575db06bd1e9ecf4eb5e8738eb96b9"
+  },
+  "backend/Nucleo.Api/Repositories/ClienteRepositorio.cs": {
+    "mtime": 1782785109.46982,
+    "ast_hash": "4d988b6d8914039b7ab76204f0b8c8b7",
+    "semantic_hash": "4d988b6d8914039b7ab76204f0b8c8b7"
+  },
+  "backend/Nucleo.Api/Repositories/HistorialActivoRepositorio.cs": {
+    "mtime": 1783018061.7842546,
+    "ast_hash": "5b2526572034ff92bb6bd2bca01e5bd6",
+    "semantic_hash": "5b2526572034ff92bb6bd2bca01e5bd6"
+  },
+  "backend/Nucleo.Api/Repositories/IActivoRepositorio.cs": {
+    "mtime": 1783018053.7359684,
+    "ast_hash": "b67764b2f06cb273c4dc07a07cb52dba",
+    "semantic_hash": "b67764b2f06cb273c4dc07a07cb52dba"
+  },
+  "backend/Nucleo.Api/Repositories/IClienteRepositorio.cs": {
+    "mtime": 1782785106.1709945,
+    "ast_hash": "d7136b9f1252c0bad9d0bf52adf2b0bf",
+    "semantic_hash": "d7136b9f1252c0bad9d0bf52adf2b0bf"
+  },
+  "backend/Nucleo.Api/Repositories/IHistorialActivoRepositorio.cs": {
+    "mtime": 1783018059.2212439,
+    "ast_hash": "0df1afd36165265cad6c016966ffca35",
+    "semantic_hash": "0df1afd36165265cad6c016966ffca35"
+  },
+  "backend/Nucleo.Api/Repositories/IReporteRepositorio.cs": {
+    "mtime": 1784056015.2526686,
+    "ast_hash": "b17e042d6fc7f5620495b0d08600c4a2",
+    "semantic_hash": "b17e042d6fc7f5620495b0d08600c4a2"
+  },
+  "backend/Nucleo.Api/Repositories/IRepositorio.cs": {
+    "mtime": 1782785095.3749795,
+    "ast_hash": "8827773fe6c363442b967d15c1c00b59",
+    "semantic_hash": "8827773fe6c363442b967d15c1c00b59"
+  },
+  "backend/Nucleo.Api/Repositories/ITecnicoRepositorio.cs": {
+    "mtime": 1783971077.3295124,
+    "ast_hash": "6739b578e5bff87a57a07fbe7607338c",
+    "semantic_hash": "6739b578e5bff87a57a07fbe7607338c"
+  },
+  "backend/Nucleo.Api/Repositories/ITicketRepositorio.cs": {
+    "mtime": 1784055932.2972398,
+    "ast_hash": "5daef55534c4fabe7085ad20dcf32464",
+    "semantic_hash": "5daef55534c4fabe7085ad20dcf32464"
+  },
+  "backend/Nucleo.Api/Repositories/IUnitOfWork.cs": {
+    "mtime": 1783018065.0700815,
+    "ast_hash": "4d11135df2f20be87e49e071dab139b2",
+    "semantic_hash": "4d11135df2f20be87e49e071dab139b2"
+  },
+  "backend/Nucleo.Api/Repositories/ReporteRepositorio.cs": {
+    "mtime": 1784056023.620903,
+    "ast_hash": "435cdce79d349fbb3cc282defc720e0d",
+    "semantic_hash": "435cdce79d349fbb3cc282defc720e0d"
+  },
+  "backend/Nucleo.Api/Repositories/Repositorio.cs": {
+    "mtime": 1782785102.4237018,
+    "ast_hash": "79a23d14e6f1f22ee18ca522d2b7d93a",
+    "semantic_hash": "79a23d14e6f1f22ee18ca522d2b7d93a"
+  },
+  "backend/Nucleo.Api/Repositories/TecnicoRepositorio.cs": {
+    "mtime": 1783971079.4800794,
+    "ast_hash": "ab71564a128d9180957160e4bf7bcf66",
+    "semantic_hash": "ab71564a128d9180957160e4bf7bcf66"
+  },
+  "backend/Nucleo.Api/Repositories/TicketRepositorio.cs": {
+    "mtime": 1784055936.04363,
+    "ast_hash": "941b71ef62d57d44086f1ee51e2a9e76",
+    "semantic_hash": "941b71ef62d57d44086f1ee51e2a9e76"
+  },
+  "backend/Nucleo.Api/Repositories/UnitOfWork.cs": {
+    "mtime": 1783018068.3876288,
+    "ast_hash": "628437c0a7b11b4346453761958afaf5",
+    "semantic_hash": "628437c0a7b11b4346453761958afaf5"
+  },
+  "backend/Nucleo.Api/Services/ActivoService.cs": {
+    "mtime": 1783971119.5236616,
+    "ast_hash": "1f536b150ceb6187b232ccfd92066a0c",
+    "semantic_hash": "1f536b150ceb6187b232ccfd92066a0c"
+  },
+  "backend/Nucleo.Api/Services/AuthService.cs": {
+    "mtime": 1783971092.9704943,
+    "ast_hash": "f31c1f14d338b8131e6e3d998c4ba795",
+    "semantic_hash": "f31c1f14d338b8131e6e3d998c4ba795"
+  },
+  "backend/Nucleo.Api/Services/ClienteService.cs": {
+    "mtime": 1782785151.8447669,
+    "ast_hash": "dfc2c57a4dda02f17a28c37683caedf5",
+    "semantic_hash": "dfc2c57a4dda02f17a28c37683caedf5"
+  },
+  "backend/Nucleo.Api/Services/IActivoService.cs": {
+    "mtime": 1783971113.808375,
+    "ast_hash": "e134e0eea486fb16a9b39131697beec1",
+    "semantic_hash": "e134e0eea486fb16a9b39131697beec1"
+  },
+  "backend/Nucleo.Api/Services/IAuthService.cs": {
+    "mtime": 1783971088.6101863,
+    "ast_hash": "74b886ca06519b23ae7d118bbc173f39",
+    "semantic_hash": "74b886ca06519b23ae7d118bbc173f39"
+  },
+  "backend/Nucleo.Api/Services/IClienteService.cs": {
+    "mtime": 1782785138.1682076,
+    "ast_hash": "651710ae92cbb04b76cea94aca64d8f8",
+    "semantic_hash": "651710ae92cbb04b76cea94aca64d8f8"
+  },
+  "backend/Nucleo.Api/Services/IReporteService.cs": {
+    "mtime": 1784056027.6123278,
+    "ast_hash": "c8128109dc673526811f3c3cd692d1e2",
+    "semantic_hash": "c8128109dc673526811f3c3cd692d1e2"
+  },
+  "backend/Nucleo.Api/Services/ITecnicoService.cs": {
+    "mtime": 1784106043.5494132,
+    "ast_hash": "2e7f44334b8f5d66b781029e7a076aa6",
+    "semantic_hash": "2e7f44334b8f5d66b781029e7a076aa6"
+  },
+  "backend/Nucleo.Api/Services/ITicketService.cs": {
+    "mtime": 1784055941.9885542,
+    "ast_hash": "f5620c1d8b1b910af9c4ca47a4ec1c1a",
+    "semantic_hash": "f5620c1d8b1b910af9c4ca47a4ec1c1a"
+  },
+  "backend/Nucleo.Api/Services/ITokenService.cs": {
+    "mtime": 1783971080.9353507,
+    "ast_hash": "c3d02aac31f16076858ac68bee714c5b",
+    "semantic_hash": "c3d02aac31f16076858ac68bee714c5b"
+  },
+  "backend/Nucleo.Api/Services/ReporteService.cs": {
+    "mtime": 1784056033.4282775,
+    "ast_hash": "aa4e532ad0bc5ce2cfcc549e474873c0",
+    "semantic_hash": "aa4e532ad0bc5ce2cfcc549e474873c0"
+  },
+  "backend/Nucleo.Api/Services/TecnicoService.cs": {
+    "mtime": 1784106047.1318364,
+    "ast_hash": "c16e0c3a84d90ad00f8f0a074be13eb1",
+    "semantic_hash": "c16e0c3a84d90ad00f8f0a074be13eb1"
+  },
+  "backend/Nucleo.Api/Services/TicketService.cs": {
+    "mtime": 1784055960.081594,
+    "ast_hash": "f0c7f78b83876e292fbc223c51ac2c5f",
+    "semantic_hash": "f0c7f78b83876e292fbc223c51ac2c5f"
+  },
+  "backend/Nucleo.Api/Services/TokenService.cs": {
+    "mtime": 1784073592.5978186,
+    "ast_hash": "a2d82b57a9d0b7d2cedfdbfadacadb6a",
+    "semantic_hash": "a2d82b57a9d0b7d2cedfdbfadacadb6a"
+  },
+  "backend/Nucleo.Api/appsettings.Development.json": {
+    "mtime": 1782784763.881499,
+    "ast_hash": "804b473502a4c415cf75db61c56c32aa",
+    "semantic_hash": "804b473502a4c415cf75db61c56c32aa"
+  },
+  "backend/Nucleo.Api/appsettings.json": {
+    "mtime": 1783971184.474339,
+    "ast_hash": "e59083d0b76f91b379c7c4188cf38eaf",
+    "semantic_hash": "e59083d0b76f91b379c7c4188cf38eaf"
+  },
+  "backend/Nucleo.Api/bin/Debug/net10.0/BuildHost-netcore/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.deps.json": {
+    "mtime": 1763421306.0,
+    "ast_hash": "6a002d69baf7b85bfe11c404487f1905",
+    "semantic_hash": "6a002d69baf7b85bfe11c404487f1905"
+  },
+  "backend/Nucleo.Api/bin/Debug/net10.0/BuildHost-netcore/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.runtimeconfig.json": {
+    "mtime": 1763421306.0,
+    "ast_hash": "4a59cbd5a00293f28ad2649fdda570f9",
+    "semantic_hash": "4a59cbd5a00293f28ad2649fdda570f9"
+  },
+  "backend/Nucleo.Api/bin/Debug/net10.0/Nucleo.Api.deps.json": {
+    "mtime": 1783971354.3000398,
+    "ast_hash": "bafbbec910d3444dd38f9a9c0e2a3ed7",
+    "semantic_hash": "bafbbec910d3444dd38f9a9c0e2a3ed7"
+  },
+  "backend/Nucleo.Api/bin/Debug/net10.0/Nucleo.Api.runtimeconfig.json": {
+    "mtime": 1783971354.3306875,
+    "ast_hash": "37595336dae30b037bd95e5047b95825",
+    "semantic_hash": "37595336dae30b037bd95e5047b95825"
+  },
+  "backend/Nucleo.Api/bin/Debug/net10.0/Nucleo.Api.staticwebassets.endpoints.json": {
+    "mtime": 1782785210.628414,
+    "ast_hash": "f44ca44dd881261586b84442f2201257",
+    "semantic_hash": "f44ca44dd881261586b84442f2201257"
+  },
+  "backend/Nucleo.Api/bin/Debug/net10.0/appsettings.Development.json": {
+    "mtime": 1782784763.881499,
+    "ast_hash": "804b473502a4c415cf75db61c56c32aa",
+    "semantic_hash": "804b473502a4c415cf75db61c56c32aa"
+  },
+  "backend/Nucleo.Api/bin/Debug/net10.0/appsettings.json": {
+    "mtime": 1783971184.474339,
+    "ast_hash": "e59083d0b76f91b379c7c4188cf38eaf",
+    "semantic_hash": "e59083d0b76f91b379c7c4188cf38eaf"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs": {
+    "mtime": 1782785204.50351,
+    "ast_hash": "8479efdf06e2d26e053d27ffa6964185",
+    "semantic_hash": "8479efdf06e2d26e053d27ffa6964185"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/Nucleo.Api.AssemblyInfo.cs": {
+    "mtime": 1784143303.1866207,
+    "ast_hash": "65333523fef8994493cfa23289d3c7e2",
+    "semantic_hash": "65333523fef8994493cfa23289d3c7e2"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/Nucleo.Api.GlobalUsings.g.cs": {
+    "mtime": 1782785204.2384086,
+    "ast_hash": "5b3fdaae7b59d230d7d136eab049a98a",
+    "semantic_hash": "5b3fdaae7b59d230d7d136eab049a98a"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/Nucleo.Api.MvcApplicationPartsAssemblyInfo.cs": {
+    "mtime": 1783971347.7890427,
+    "ast_hash": "7f9772817e864396a05b7bce5a45feeb",
+    "semantic_hash": "7f9772817e864396a05b7bce5a45feeb"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/Nucleo.Api.sourcelink.json": {
+    "mtime": 1784152598.2858434,
+    "ast_hash": "9d3152f116c9a5259949d0f7ef0dcb6e",
+    "semantic_hash": "9d3152f116c9a5259949d0f7ef0dcb6e"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json": {
+    "mtime": 1784152602.2750154,
+    "ast_hash": "cc1e7aa2d1656e1090cd584b7f5b772b",
+    "semantic_hash": "cc1e7aa2d1656e1090cd584b7f5b772b"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/rjsmrazor.dswa.cache.json": {
+    "mtime": 1784152602.2648437,
+    "ast_hash": "d691ac1f1714a45ccf8e906dc3f637ef",
+    "semantic_hash": "d691ac1f1714a45ccf8e906dc3f637ef"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/rpswa.dswa.cache.json": {
+    "mtime": 1783971347.113769,
+    "ast_hash": "1cb90f1a95eca13f4b75deb4f43cd35b",
+    "semantic_hash": "1cb90f1a95eca13f4b75deb4f43cd35b"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/staticwebassets.build.endpoints.json": {
+    "mtime": 1782785210.628414,
+    "ast_hash": "f44ca44dd881261586b84442f2201257",
+    "semantic_hash": "f44ca44dd881261586b84442f2201257"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/staticwebassets.build.json": {
+    "mtime": 1782785210.628414,
+    "ast_hash": "6e27f3486e91976e084174505a3e06f5",
+    "semantic_hash": "6e27f3486e91976e084174505a3e06f5"
+  },
+  "backend/Nucleo.Api/obj/Nucleo.Api.csproj.nuget.dgspec.json": {
+    "mtime": 1783971346.3845496,
+    "ast_hash": "d88a809de7d5412fde08b0aab9676811",
+    "semantic_hash": "d88a809de7d5412fde08b0aab9676811"
+  },
+  "backend/Nucleo.Api/obj/project.assets.json": {
+    "mtime": 1783970909.78889,
+    "ast_hash": "cfdf04765c7176bcd84f6adcc519a64a",
+    "semantic_hash": "cfdf04765c7176bcd84f6adcc519a64a"
+  },
+  "frontend/.vscode/extensions.json": {
+    "mtime": 1784073471.1314943,
+    "ast_hash": "66fd9e60d4633b6099fe02e06a7075ea",
+    "semantic_hash": "66fd9e60d4633b6099fe02e06a7075ea"
+  },
+  "frontend/.vscode/launch.json": {
+    "mtime": 1784073471.1314943,
+    "ast_hash": "430386a2f03e9d559664c196344c121b",
+    "semantic_hash": "430386a2f03e9d559664c196344c121b"
+  },
+  "frontend/.vscode/tasks.json": {
+    "mtime": 1784073471.1314943,
+    "ast_hash": "d2fc2624d783980be281b4cf0acc2455",
+    "semantic_hash": "d2fc2624d783980be281b4cf0acc2455"
+  },
+  "frontend/angular.json": {
+    "mtime": 1784074855.8313687,
+    "ast_hash": "b5b791d5077d2f88b4704d4e648c9b68",
+    "semantic_hash": "b5b791d5077d2f88b4704d4e648c9b68"
+  },
+  "frontend/package.json": {
+    "mtime": 1784073471.1247954,
+    "ast_hash": "ef204b2859ba70857932a1d77fcdec3a",
+    "semantic_hash": "ef204b2859ba70857932a1d77fcdec3a"
+  },
+  "frontend/src/app/app.component.spec.ts": {
+    "mtime": 1784075035.494046,
+    "ast_hash": "c40f2ea21f9115e6b77e4b0b97ec0af0",
+    "semantic_hash": "c40f2ea21f9115e6b77e4b0b97ec0af0"
+  },
+  "frontend/src/app/app.component.ts": {
+    "mtime": 1784186059.6987715,
+    "ast_hash": "329c0a3c2a3c63292920ef36928f14f9",
+    "semantic_hash": "329c0a3c2a3c63292920ef36928f14f9"
+  },
+  "frontend/src/app/app.config.ts": {
+    "mtime": 1784074985.6215672,
+    "ast_hash": "f42a3f659c485a7c9e9185b14af0e2b0",
+    "semantic_hash": "f42a3f659c485a7c9e9185b14af0e2b0"
+  },
+  "frontend/src/app/app.routes.ts": {
+    "mtime": 1784106313.7228005,
+    "ast_hash": "40e33aea07c7e931e7e1d861b90bb45c",
+    "semantic_hash": "40e33aea07c7e931e7e1d861b90bb45c"
+  },
+  "frontend/src/app/core/guards/auth.guard.ts": {
+    "mtime": 1784074942.7689066,
+    "ast_hash": "3a358878870f38e23fb9767e179b687c",
+    "semantic_hash": "3a358878870f38e23fb9767e179b687c"
+  },
+  "frontend/src/app/core/guards/role.guard.ts": {
+    "mtime": 1784074945.210899,
+    "ast_hash": "53f28147133c8f327a015c10025d7d3d",
+    "semantic_hash": "53f28147133c8f327a015c10025d7d3d"
+  },
+  "frontend/src/app/core/interceptors/auth.interceptor.ts": {
+    "mtime": 1784074940.9491556,
+    "ast_hash": "6bb72940071877bf6b1e449a3737ba46",
+    "semantic_hash": "6bb72940071877bf6b1e449a3737ba46"
+  },
+  "frontend/src/app/core/models/auth.models.ts": {
+    "mtime": 1784074928.9487562,
+    "ast_hash": "5a36aacb98c1ff55cee702347daee3a0",
+    "semantic_hash": "5a36aacb98c1ff55cee702347daee3a0"
+  },
+  "frontend/src/app/core/models/nucleo.models.ts": {
+    "mtime": 1784106078.8794496,
+    "ast_hash": "a78d00f40ebcb7e4968afaadd0b7a773",
+    "semantic_hash": "a78d00f40ebcb7e4968afaadd0b7a773"
+  },
+  "frontend/src/app/core/services/auth.service.ts": {
+    "mtime": 1784106104.5505068,
+    "ast_hash": "a04cb28ffd13ccdb16691f463b4da8e7",
+    "semantic_hash": "a04cb28ffd13ccdb16691f463b4da8e7"
+  },
+  "frontend/src/app/core/services/nucleo-api.service.ts": {
+    "mtime": 1784106090.3824914,
+    "ast_hash": "1dcf4b0990af951b2f8e516476dcacb0",
+    "semantic_hash": "1dcf4b0990af951b2f8e516476dcacb0"
+  },
+  "frontend/src/app/core/utils/jwt.util.ts": {
+    "mtime": 1784074934.4705188,
+    "ast_hash": "3efddaddce5ae4c7b12f00539cdd9277",
+    "semantic_hash": "3efddaddce5ae4c7b12f00539cdd9277"
+  },
+  "frontend/src/app/features/activos/activos.component.ts": {
+    "mtime": 1784186078.9369829,
+    "ast_hash": "29eae0654635511a5cbdfca75fad7f75",
+    "semantic_hash": "29eae0654635511a5cbdfca75fad7f75"
+  },
+  "frontend/src/app/features/admin/admin.component.ts": {
+    "mtime": 1784074975.618701,
+    "ast_hash": "af8b7a15e980f884044c963f8dc9e85e",
+    "semantic_hash": "af8b7a15e980f884044c963f8dc9e85e"
+  },
+  "frontend/src/app/features/clientes/clientes.component.ts": {
+    "mtime": 1784186070.1190455,
+    "ast_hash": "e587fdee813af98501394aca40f72bd5",
+    "semantic_hash": "e587fdee813af98501394aca40f72bd5"
+  },
+  "frontend/src/app/features/dashboard/dashboard.component.ts": {
+    "mtime": 1784106287.751907,
+    "ast_hash": "0524ca8771ab13cb460c9207a9bb0473",
+    "semantic_hash": "0524ca8771ab13cb460c9207a9bb0473"
+  },
+  "frontend/src/app/features/login/login.component.ts": {
+    "mtime": 1784074952.6854086,
+    "ast_hash": "5ab5fc1578d0cb7865e78f433f61dc9a",
+    "semantic_hash": "5ab5fc1578d0cb7865e78f433f61dc9a"
+  },
+  "frontend/src/app/features/tickets/tickets.component.ts": {
+    "mtime": 1784186087.5936306,
+    "ast_hash": "9e9574d50e6c545fa9d84e25be4215c1",
+    "semantic_hash": "9e9574d50e6c545fa9d84e25be4215c1"
+  },
+  "frontend/src/app/shared/confirm-dialog/confirm-dialog.component.ts": {
+    "mtime": 1784186035.5455465,
+    "ast_hash": "7ba93965efbfd108449d177fa8e4ba7b",
+    "semantic_hash": "7ba93965efbfd108449d177fa8e4ba7b"
+  },
+  "frontend/src/app/shared/confirm-dialog/confirm-dialog.service.ts": {
+    "mtime": 1784186034.3294415,
+    "ast_hash": "5b8bce6cfe80877a54ae8d7c2ec1cdaf",
+    "semantic_hash": "5b8bce6cfe80877a54ae8d7c2ec1cdaf"
+  },
+  "frontend/src/environments/environment.development.ts": {
+    "mtime": 1784074870.8321095,
+    "ast_hash": "aa2b3232b502d7de6fa7f647bbd17478",
+    "semantic_hash": "aa2b3232b502d7de6fa7f647bbd17478"
+  },
+  "frontend/src/environments/environment.ts": {
+    "mtime": 1784074864.81484,
+    "ast_hash": "aa2b3232b502d7de6fa7f647bbd17478",
+    "semantic_hash": "aa2b3232b502d7de6fa7f647bbd17478"
+  },
+  "frontend/src/main.ts": {
+    "mtime": 1784073471.1314943,
+    "ast_hash": "b5c1d106e573fea21ef1ad9e4360e77a",
+    "semantic_hash": "b5c1d106e573fea21ef1ad9e4360e77a"
+  },
+  "frontend/tsconfig.app.json": {
+    "mtime": 1784073471.1314943,
+    "ast_hash": "8d99fdcdf658986569ea23b33df685a6",
+    "semantic_hash": "8d99fdcdf658986569ea23b33df685a6"
+  },
+  "frontend/tsconfig.json": {
+    "mtime": 1784073471.1247954,
+    "ast_hash": "dd3c8905847764e8a227c8bbb23ffab6",
+    "semantic_hash": "dd3c8905847764e8a227c8bbb23ffab6"
+  },
+  "frontend/tsconfig.spec.json": {
+    "mtime": 1784073471.1314943,
+    "ast_hash": "fde196cef563197a78958ceaea284638",
+    "semantic_hash": "fde196cef563197a78958ceaea284638"
+  },
+  ".claude/CLAUDE.md": {
+    "mtime": 1784143235.565696,
+    "ast_hash": "5f80e5bef06cb4643ba49e1a39a0ceaf",
+    "semantic_hash": "5f80e5bef06cb4643ba49e1a39a0ceaf"
+  },
+  "CLAUDE.md": {
+    "mtime": 1784142600.5871353,
+    "ast_hash": "e5d744bc0bc6820527b59471c05968c2",
+    "semantic_hash": "e5d744bc0bc6820527b59471c05968c2"
+  },
+  "backend/Nucleo.Api.Tests/obj/Debug/net10.0/Nucleo.Api.Tests.csproj.FileListAbsolute.txt": {
+    "mtime": 1784104858.7944982,
+    "ast_hash": "c3cff9e1f433193ea81f9f4ecc109c43",
+    "semantic_hash": "c3cff9e1f433193ea81f9f4ecc109c43"
+  },
+  "backend/Nucleo.Api/obj/Debug/net10.0/Nucleo.Api.csproj.FileListAbsolute.txt": {
+    "mtime": 1783971354.3492112,
+    "ast_hash": "81d7d7d55d3746a1238096a9849f572b",
+    "semantic_hash": "81d7d7d55d3746a1238096a9849f572b"
+  },
+  "docs/TESTING.md": {
+    "mtime": 1784104934.3252058,
+    "ast_hash": "cf7a171000761333c72d8c59fb57e547",
+    "semantic_hash": "cf7a171000761333c72d8c59fb57e547"
+  },
+  "frontend/README.md": {
+    "mtime": 1784073471.1247954,
+    "ast_hash": "0fc69c6b83e4618619075e15b5e88c4b",
+    "semantic_hash": "0fc69c6b83e4618619075e15b5e88c4b"
+  },
+  "frontend/src/app/app.component.html": {
+    "mtime": 1784186060.8335652,
+    "ast_hash": "ad74672cf88469510a5d8ab14b53de43",
+    "semantic_hash": "ad74672cf88469510a5d8ab14b53de43"
+  },
+  "frontend/src/app/features/activos/activos.component.html": {
+    "mtime": 1784106211.9574144,
+    "ast_hash": "78c3960d580047596eab9b4dc93a1b4d",
+    "semantic_hash": "78c3960d580047596eab9b4dc93a1b4d"
+  },
+  "frontend/src/app/features/admin/admin.component.html": {
+    "mtime": 1784074977.0738175,
+    "ast_hash": "1660b6059667c55c625e35d59487705f",
+    "semantic_hash": "1660b6059667c55c625e35d59487705f"
+  },
+  "frontend/src/app/features/clientes/clientes.component.html": {
+    "mtime": 1784106158.2699864,
+    "ast_hash": "45cbc0a11545d1ccaba802f9e27fe0da",
+    "semantic_hash": "45cbc0a11545d1ccaba802f9e27fe0da"
+  },
+  "frontend/src/app/features/dashboard/dashboard.component.html": {
+    "mtime": 1784106296.9342122,
+    "ast_hash": "6059e5cf9c077e50bdb9b9ce27e3c7cb",
+    "semantic_hash": "6059e5cf9c077e50bdb9b9ce27e3c7cb"
+  },
+  "frontend/src/app/features/login/login.component.html": {
+    "mtime": 1784074955.6403275,
+    "ast_hash": "bfee4edbec6bc3923193b78f579b03d0",
+    "semantic_hash": "bfee4edbec6bc3923193b78f579b03d0"
+  },
+  "frontend/src/app/features/tickets/tickets.component.html": {
+    "mtime": 1784106258.3183844,
+    "ast_hash": "a30b6f34fd4073dd8b44b7a3503aefdf",
+    "semantic_hash": "a30b6f34fd4073dd8b44b7a3503aefdf"
+  },
+  "frontend/src/app/shared/confirm-dialog/confirm-dialog.component.html": {
+    "mtime": 1784186037.4608881,
+    "ast_hash": "3bd07a4c1e8f7db6d6a1a2a1f1f29054",
+    "semantic_hash": "3bd07a4c1e8f7db6d6a1a2a1f1f29054"
+  },
+  "frontend/src/index.html": {
+    "mtime": 1784073471.1314943,
+    "ast_hash": "ff81e1e33011abb66bf0061d4a2f8fa4",
+    "semantic_hash": "ff81e1e33011abb66bf0061d4a2f8fa4"
+  }
+}

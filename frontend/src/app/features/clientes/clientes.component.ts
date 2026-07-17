@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { Cliente } from '../../core/models/nucleo.models';
 import { AuthService } from '../../core/services/auth.service';
 import { NucleoApiService } from '../../core/services/nucleo-api.service';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 
 /**
  * Lista + alta/edición de clientes. La LISTA se consume con async pipe (el template
@@ -19,6 +20,7 @@ import { NucleoApiService } from '../../core/services/nucleo-api.service';
 export class ClientesComponent {
   private readonly api = inject(NucleoApiService);
   private readonly fb = inject(FormBuilder);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   readonly auth = inject(AuthService);
 
   clientes$: Observable<Cliente[]> = this.api.obtenerClientes();
@@ -92,8 +94,9 @@ export class ClientesComponent {
     });
   }
 
-  eliminar(cliente: Cliente): void {
-    if (!confirm(`¿Eliminar al cliente "${cliente.nombre}"?`)) return;
+  async eliminar(cliente: Cliente): Promise<void> {
+    const confirmado = await this.confirmDialog.confirmar(`¿Eliminar al cliente "${cliente.nombre}"?`);
+    if (!confirmado) return;
 
     this.error.set(null);
     this.api.eliminarCliente(cliente.id).subscribe({

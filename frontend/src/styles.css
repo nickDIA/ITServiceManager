@@ -71,7 +71,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.75rem;
   background: #fff;
-  padding: 1rem;
+  padding: 1rem 1rem 1.5rem;
   border-radius: 10px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   margin-bottom: 1.25rem;
@@ -82,12 +82,28 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  /* Ancla para el error posicionado en absoluto (ver .campo-error): así el mensaje
+     nunca reserva altura en el flujo, y ningún campo vecino se desplaza al aparecer. */
+  position: relative;
 }
 
 .formulario label {
   font-size: 0.78rem;
   font-weight: 600;
   color: #4a5065;
+}
+
+/* Un .campo cuyo primer hijo es un botón (p. ej. "Crear cliente") no tiene <label>
+   encima como sus vecinos, así que align-items:end lo deja "hundido" respecto a los
+   inputs. Este ::before reserva exactamente el alto de una etiqueta invisible (mismo
+   font-size/weight, así que el alto coincide siempre, sin números mágicos) para que
+   el botón quede a la misma altura que un input real, en cualquier formulario. */
+.formulario .campo:has(> button:first-child)::before {
+  content: '\00a0';
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  visibility: hidden;
 }
 
 .formulario input,
@@ -100,6 +116,14 @@ body {
   border-radius: 6px;
   font-size: 0.88rem;
   font-family: inherit;
+  height: 2.25rem;
+}
+
+/* Mismo alto exacto que los inputs de arriba: sin esto, el botón (sin borde, font-size
+   distinto) queda ~6px más bajo que un input aunque ambos compartan el ::before fantasma
+   — las bases coinciden pero las tapas no. Con height explícita en ambos, coinciden en las dos. */
+.formulario .btn {
+  height: 2.25rem;
 }
 
 .formulario input:focus,
@@ -110,8 +134,16 @@ body {
 }
 
 .campo-error {
+  /* Fuera del flujo a propósito: si estuviera en flujo, aparecer/desaparecer cambia
+     la altura del .campo y (por el align-items:end de .formulario) desplaza verticalmente
+     los campos vecinos de la misma fila. Con position:absolute nunca ocupa espacio propio. */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.15rem;
   color: #c02626;
   font-size: 0.75rem;
+  white-space: nowrap;
 }
 
 /* --------- botones --------- */
@@ -144,6 +176,13 @@ body {
 }
 
 .btn.peligro:hover { background: #fbe9e9; }
+
+.btn.peligro-solido {
+  background: #c02626;
+  color: #fff;
+}
+
+.btn.peligro-solido:hover { background: #a31f1f; }
 
 .btn.mini {
   padding: 0.2rem 0.55rem;

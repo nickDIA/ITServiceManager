@@ -6,6 +6,7 @@ import {
 } from '../../core/models/nucleo.models';
 import { AuthService } from '../../core/services/auth.service';
 import { NucleoApiService } from '../../core/services/nucleo-api.service';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 
 /**
  * Tablero de tickets agrupado por estado. Las columnas y sus contadores son COMPUTED
@@ -22,6 +23,7 @@ import { NucleoApiService } from '../../core/services/nucleo-api.service';
 export class TicketsComponent {
   private readonly api = inject(NucleoApiService);
   private readonly fb = inject(FormBuilder);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   readonly auth = inject(AuthService);
 
   readonly transiciones = TRANSICIONES_TICKET;
@@ -118,8 +120,9 @@ export class TicketsComponent {
     });
   }
 
-  eliminar(ticket: Ticket): void {
-    if (!confirm(`¿Eliminar el ticket "${ticket.titulo}"?`)) return;
+  async eliminar(ticket: Ticket): Promise<void> {
+    const confirmado = await this.confirmDialog.confirmar(`¿Eliminar el ticket "${ticket.titulo}"?`);
+    if (!confirmado) return;
     this.error.set(null);
     this.api.eliminarTicket(ticket.id).subscribe({
       next: () => this.tickets.update((lista) => lista.filter((t) => t.id !== ticket.id)),

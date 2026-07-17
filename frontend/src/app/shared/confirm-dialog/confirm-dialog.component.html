@@ -1,0 +1,11 @@
+@if (service.estado(); as estado) {
+  <div class="overlay" (click)="service.responder(false)">
+    <div class="dialogo" role="alertdialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <p>{{ estado.mensaje }}</p>
+      <div class="acciones">
+        <button class="btn secundario" type="button" (click)="service.responder(false)">Cancelar</button>
+        <button class="btn peligro-solido" type="button" (click)="service.responder(true)">Eliminar</button>
+      </div>
+    </div>
+  </div>
+}

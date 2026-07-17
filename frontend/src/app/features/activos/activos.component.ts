@@ -6,6 +6,7 @@ import {
 } from '../../core/models/nucleo.models';
 import { AuthService } from '../../core/services/auth.service';
 import { NucleoApiService } from '../../core/services/nucleo-api.service';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 
 /**
  * Gestión de activos. El filtro por cliente es un signal, y un EFFECT reacciona a sus
@@ -20,6 +21,7 @@ import { NucleoApiService } from '../../core/services/nucleo-api.service';
 export class ActivosComponent {
   private readonly api = inject(NucleoApiService);
   private readonly fb = inject(FormBuilder);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   readonly auth = inject(AuthService);
 
   readonly transiciones = TRANSICIONES_ACTIVO;
@@ -100,8 +102,11 @@ export class ActivosComponent {
     });
   }
 
-  eliminar(activo: Activo): void {
-    if (!confirm(`¿Eliminar el activo "${activo.nombre}"? Se borrará también su historial.`)) return;
+  async eliminar(activo: Activo): Promise<void> {
+    const confirmado = await this.confirmDialog.confirmar(
+      `¿Eliminar el activo "${activo.nombre}"? Se borrará también su historial.`
+    );
+    if (!confirmado) return;
     this.error.set(null);
     this.api.eliminarActivo(activo.id).subscribe({
       next: () => this.recargar(),
