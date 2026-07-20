@@ -1,0 +1,31 @@
+{
+  "output": {
+    "filePath": "repomix-output.md",
+    "style": "markdown",
+    "removeComments": false,
+    "removeEmptyLines": false,
+    "showLineNumbers": false,
+    "copyToClipboard": false
+  },
+  "include": [],
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      "**/bin/**",
+      "**/obj/**",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/.angular/**",
+      "**/*.dll",
+      "**/*.pdb",
+      "**/*.exe",
+      "**/*.sourcelink.json",
+      "package-lock.json",
+      "graphify-out/**"
+    ]
+  },
+  "security": {
+    "enableSecurityCheck": true
+  }
+}
