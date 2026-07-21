@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
@@ -8,6 +8,16 @@ import { AuthService } from '../../core/services/auth.service';
 import { NucleoApiService } from '../../core/services/nucleo-api.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 
+/** Solo se alerta sobre tickets todavía en curso; un ticket cerrado ya no está "en riesgo". */
+const ESTADOS_CON_RIESGO_SLA: EstadoTicket[] = ['Abierto', 'EnProgreso'];
+/** A partir de este % del SLA transcurrido, se marca "en riesgo" (antes de incumplirlo). */
+const UMBRAL_RIESGO_SLA = 0.8;
+
+export interface RiesgoSla {
+  nivel: 'riesgo' | 'incumplido';
+  horasTranscurridas: number;
+}
+
 /**
  * Tablero de tickets agrupado por estado. Las columnas y sus contadores son COMPUTED
  * derivados del signal `tickets`: al cambiar el estado de un ticket solo se actualiza
@@ -16,7 +26,7 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog
  */
 @Component({
   selector: 'app-tickets',
-  imports: [DatePipe, ReactiveFormsModule],
+  imports: [DatePipe, DecimalPipe, ReactiveFormsModule],
   templateUrl: './tickets.component.html',
   styleUrl: './tickets.component.css'
 })
@@ -52,6 +62,33 @@ export class TicketsComponent {
   readonly totalAbiertos = computed(
     () => this.tickets().filter((t) => t.estado === 'Abierto' || t.estado === 'EnProgreso').length
   );
+
+  /**
+   * Riesgo de SLA por ticket, id -> RiesgoSla. COMPUTED como el resto del tablero: "ahora" se
+   * lee una sola vez por recálculo, no en cada evaluación de template — llamar Date.now()
+   * directo en el template producía un NG0100 (el valor "cambiaba" entre pasadas de chequeo
+   * de Angular en dev porque cada llamada devolvía un milisegundo distinto).
+   */
+  readonly riesgosSla = computed(() => {
+    const ahora = Date.now();
+    const mapa = new Map<number, RiesgoSla>();
+    for (const ticket of this.tickets()) {
+      const riesgo = this.calcularRiesgoSla(ticket, ahora);
+      if (riesgo) mapa.set(ticket.id, riesgo);
+    }
+    return mapa;
+  });
+
+  private calcularRiesgoSla(ticket: Ticket, ahora: number): RiesgoSla | null {
+    if (ticket.slaHoras == null || !ESTADOS_CON_RIESGO_SLA.includes(ticket.estado)) return null;
+
+    const horasTranscurridas = (ahora - new Date(ticket.fechaCreacion).getTime()) / 3_600_000;
+    const proporcion = horasTranscurridas / ticket.slaHoras;
+
+    if (proporcion >= 1) return { nivel: 'incumplido', horasTranscurridas };
+    if (proporcion >= UMBRAL_RIESGO_SLA) return { nivel: 'riesgo', horasTranscurridas };
+    return null;
+  }
 
   readonly form = this.fb.nonNullable.group({
     clienteId: [0, [Validators.required, Validators.min(1)]],

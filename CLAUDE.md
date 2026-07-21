@@ -107,6 +107,15 @@ CORS is enabled (`AddCors`/`UseCors("Frontend")` in `Program.cs`) for `http://lo
 
 **Deliberately NOT paginated:** `GET /api/tickets` and the activo/cliente lists that back dropdowns or aggregations. Both `TicketsComponent`'s kanban (`computed` columns grouped by `estado`) and `DashboardComponent`'s `activosPorEstado` (`computed` over the full `activos` signal) derive their view from the *entire* result set — paginating either would silently make the board/chart show a partial, misleading picture instead of failing loudly. The dropdown-populating calls (client selector in Activos/Tickets, activo-of-selected-client selector in Tickets) request a large page (`tamano=200`, or `500` for the dashboard's activos) rather than truly paginating, since a single MSP's client/asset counts don't realistically approach that in the near term — revisit only if that assumption stops holding, not preemptively.
 
+### Alertas de SLA (badge por ticket, kanban)
+
+`Contrato.SlaHoras` is the client's contracted response window. `TicketResponseDto.SlaHoras` (nullable) is the **strictest** `SlaHoras` among the ticket's cliente's currently-`Activo` contratos (`TicketService.ObtenerSlaHoras` — there's no DB uniqueness constraint forcing exactly one active contract per client, so ties are broken conservatively, favoring the alert over a silent miss). `TicketRepositorio` loads it via `.Include(t => t.Cliente).ThenInclude(c => c.Contratos)`.
+
+Everything else is frontend-only, computed from that one number — no new endpoint, no background job:
+- `TicketsComponent.riesgosSla` is a `computed()` — `Map<ticketId, RiesgoSla>` — derived from `tickets()` and `Date.now()` read *once* per recomputation. It replaced an earlier version that called `Date.now()` straight from the template on a plain method: that produced a real `NG0100 ExpressionChangedAfterItHasBeenCheckedError` in dev (two template evaluations of the same expression landed a few ms apart, so the "hours elapsed" value differed between Angular's check and verify passes). Any per-render, non-signal-derived value in a template is at risk of the same bug — compute it once into a signal/computed instead.
+- Only `Abierto`/`EnProgreso` tickets are eligible (a closed ticket isn't "at risk" anymore); `>= 100%` of `SlaHoras` elapsed → `incumplido` (red badge), `>= 80%` → `riesgo` (amber badge), otherwise no badge at all — showing a badge only when there's something to act on, not a permanent "en tiempo" state on every card.
+- Deliberately **not** on the Dashboard (see the pagination note above for the reasoning behind picking one surface over the other for this kind of alert): it's a technician-facing, per-ticket signal, not a manager-facing aggregate.
+
 ### Frontend (Fase 5-6)
 
 Standalone Angular 19, no NgModules, no SSR. Structure under `frontend/src/app/`:
@@ -135,5 +144,6 @@ Run both servers together to develop against this (`dotnet run` + `npm start --p
 - **Fase 4 (done):** Ticket CRUD + state machine, JOIN-based ticket listing, dashboard aggregations. Contrato/Ticket seed data added (both tables existed since the Fase 1 migration but were never seeded until now).
 - **Fase 5 (done):** Angular 19 project structure, JWT interceptor, `authGuard`/`roleGuard`, login screen. Validated end-to-end in a real browser (not just Postman) — this is what surfaced the CORS and `MapInboundClaims` issues documented above.
 - **Fase 6 (done):** real feature UIs — Clientes (async pipe), Activos (effect-driven filter, state change + audit trail), Tickets kanban board and dashboard (computed signals), role-aware UI. All 6 planned phases complete.
-- **Server-side pagination (done, post-Fase 6):** `GET /api/clientes` and `GET /api/activos` paginate with infinite scroll ("Cargar más") on the frontend — see "Paginación server-side" above for scope and why Tickets/dashboard aggregations were deliberately left out. Remaining stretch goals from the spec: SLA alerts, SignalR, exports.
+- **Server-side pagination (done, post-Fase 6):** `GET /api/clientes` and `GET /api/activos` paginate with infinite scroll ("Cargar más") on the frontend — see "Paginación server-side" above for scope and why Tickets/dashboard aggregations were deliberately left out.
+- **Alertas de SLA (done, post-Fase 6):** per-ticket risk badge on the Tickets kanban — see "Alertas de SLA" above. Remaining stretch goals from the spec: SignalR, exports.
 - See `C:\Users\domin\Downloads\proyecto-nucleo-spec (1).md` for the original spec — this project follows it, reconciled against choices made before it was shared (see project memory).

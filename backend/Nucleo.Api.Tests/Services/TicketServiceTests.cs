@@ -38,6 +38,37 @@ public class TicketServiceTests
         Tecnico = new Tecnico { Id = 4, Nombre = "Carlos Méndez" }
     };
 
+    // ------------------------------------------------------------ SLA (alertas)
+
+    [Fact]
+    public async Task ObtenerPorIdAsync_TomaElSlaMasEstrictoEntreLosContratosActivosDelCliente()
+    {
+        var ticket = TicketDemo(1);
+        ticket.Cliente!.Contratos =
+        [
+            new Contrato { Id = 1, ClienteId = 1, Activo = true, SlaHoras = 8 },
+            new Contrato { Id = 2, ClienteId = 1, Activo = true, SlaHoras = 4 },
+            new Contrato { Id = 3, ClienteId = 1, Activo = false, SlaHoras = 1 } // inactivo: no cuenta
+        ];
+        _ticketRepo.Setup(r => r.ObtenerPorIdConJoinsAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(ticket);
+
+        var resultado = await _service.ObtenerPorIdAsync(1);
+
+        Assert.Equal(4, resultado!.SlaHoras);
+    }
+
+    [Fact]
+    public async Task ObtenerPorIdAsync_ClienteSinContratoActivo_SlaHorasEsNull()
+    {
+        var ticket = TicketDemo(1);
+        ticket.Cliente!.Contratos = [new Contrato { Id = 1, ClienteId = 1, Activo = false, SlaHoras = 8 }];
+        _ticketRepo.Setup(r => r.ObtenerPorIdConJoinsAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(ticket);
+
+        var resultado = await _service.ObtenerPorIdAsync(1);
+
+        Assert.Null(resultado!.SlaHoras);
+    }
+
     private static CrearTicketDto CrearDto(int? activoId = null) => new()
     {
         ClienteId = 1,

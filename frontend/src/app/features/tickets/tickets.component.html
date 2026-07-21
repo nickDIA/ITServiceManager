@@ -81,6 +81,14 @@
             @if (ticket.activoNombre) {
               <div class="tarjeta-detalle">🖥 {{ ticket.activoNombre }}</div>
             }
+            @if (riesgosSla().get(ticket.id); as riesgo) {
+              <div class="tarjeta-detalle">
+                <span class="badge {{ riesgo.nivel === 'incumplido' ? 'SlaIncumplido' : 'SlaRiesgo' }}">
+                  {{ riesgo.nivel === 'incumplido' ? '🔴 SLA incumplido' : '🟡 SLA en riesgo' }}
+                  ({{ riesgo.horasTranscurridas | number: '1.0-0' }}h/{{ ticket.slaHoras }}h)
+                </span>
+              </div>
+            }
             <div class="tarjeta-detalle">👤 {{ ticket.tecnicoNombre }}</div>
             <div class="tarjeta-detalle">
               {{ ticket.fechaCreacion | date: 'dd/MM/yyyy' }}

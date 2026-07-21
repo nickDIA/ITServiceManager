@@ -110,6 +110,8 @@ export interface Ticket {
   tecnicoNombre: string;
   fechaCreacion: string;
   fechaCierre: string | null;
+  /** SLA de respuesta (horas) del contrato activo del cliente. Null si no tiene contrato activo. */
+  slaHoras: number | null;
 }
 
 export interface CrearTicket {

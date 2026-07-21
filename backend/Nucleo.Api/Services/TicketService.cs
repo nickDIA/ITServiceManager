@@ -152,6 +152,18 @@ public class TicketService : ITicketService
         TecnicoId = t.TecnicoId,
         TecnicoNombre = t.Tecnico?.Nombre ?? string.Empty,
         FechaCreacion = t.FechaCreacion,
-        FechaCierre = t.FechaCierre
+        FechaCierre = t.FechaCierre,
+        SlaHoras = ObtenerSlaHoras(t.Cliente)
     };
+
+    /// <summary>
+    /// SLA del contrato activo del cliente. Si por alguna razón hay más de uno activo a la
+    /// vez (no hay restricción de unicidad en BD), se toma el más estricto (mínimo) en vez
+    /// de uno arbitrario — más seguro para una alerta que para un promedio.
+    /// </summary>
+    private static int? ObtenerSlaHoras(Cliente? cliente)
+    {
+        var slasActivos = cliente?.Contratos.Where(c => c.Activo).Select(c => c.SlaHoras).ToList();
+        return slasActivos is { Count: > 0 } ? slasActivos.Min() : null;
+    }
 }

@@ -21,4 +21,7 @@ public class TicketResponseDto
     public string TecnicoNombre { get; set; } = string.Empty;
     public DateTime FechaCreacion { get; set; }
     public DateTime? FechaCierre { get; set; }
+
+    /// <summary>SLA de respuesta (en horas) del contrato activo del cliente. Null si el cliente no tiene contrato activo.</summary>
+    public int? SlaHoras { get; set; }
 }

@@ -64,6 +64,8 @@ body {
 .badge.Cancelado { background: #fbe4e4; color: #9c2323; }
 .badge.Critica { background: #fbe4e4; color: #9c2323; }
 .badge.Alta { background: #fdf1dc; color: #92600a; }
+.badge.SlaRiesgo { background: #fdf1dc; color: #92600a; }
+.badge.SlaIncumplido { background: #fbe4e4; color: #9c2323; }
 
 /* --------- formularios --------- */
 .formulario {

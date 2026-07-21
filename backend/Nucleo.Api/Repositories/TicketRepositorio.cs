@@ -14,7 +14,7 @@ public class TicketRepositorio : Repositorio<Ticket>, ITicketRepositorio
         int? clienteId, int? tecnicoId, EstadoTicket? estado, CancellationToken ct = default)
     {
         var query = _dbSet
-            .Include(t => t.Cliente)
+            .Include(t => t.Cliente).ThenInclude(c => c.Contratos)
             .Include(t => t.Activo)
             .Include(t => t.Tecnico)
             .AsNoTracking()
@@ -34,7 +34,7 @@ public class TicketRepositorio : Repositorio<Ticket>, ITicketRepositorio
 
     public async Task<Ticket?> ObtenerPorIdConJoinsAsync(int id, CancellationToken ct = default)
         => await _dbSet
-            .Include(t => t.Cliente)
+            .Include(t => t.Cliente).ThenInclude(c => c.Contratos)
             .Include(t => t.Activo)
             .Include(t => t.Tecnico)
             .AsNoTracking()
