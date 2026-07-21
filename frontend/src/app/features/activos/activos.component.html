@@ -66,6 +66,7 @@
   } @else if (activos().length === 0) {
     <p class="vacio">No hay activos para este filtro.</p>
   } @else {
+    <div class="tabla-scroll">
     <table class="tabla">
       <thead>
         <tr>
@@ -158,6 +159,7 @@
         }
       </tbody>
     </table>
+    </div>
     @if (hayMas()) {
       <div class="cargar-mas">
         <button class="btn secundario" type="button" (click)="cargarMas()" [disabled]="cargandoMas()">

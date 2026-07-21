@@ -78,7 +78,9 @@
 }
 
 .columna-vacia {
-  color: #9aa0b4;
+  /* #9aa0b4 daba 2.28:1 sobre el fondo de columna (#eef0f5): fallo AA real detectado con axe.
+     #555c72 (mismo gris de .tarjeta-meta) sube a ~5.8:1. */
+  color: #555c72;
   font-size: 0.8rem;
   font-style: italic;
   text-align: center;

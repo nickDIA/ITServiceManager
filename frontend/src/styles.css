@@ -212,3 +212,9 @@ body {
   justify-content: center;
   margin-top: 1rem;
 }
+
+/* Tablas anchas: scrollean dentro de su propio contenedor en móvil en vez de
+   empujar el body de la página (regresión de overflow a 375px en Clientes/Activos). */
+.tabla-scroll {
+  overflow-x: auto;
+}

@@ -40,3 +40,6 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Reportes locales de Lighthouse CI (se regeneran; el CI usa temporary-public-storage)
+.lighthouseci/

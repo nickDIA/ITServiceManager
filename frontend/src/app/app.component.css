@@ -1,6 +1,8 @@
 .navbar {
   display: flex;
   align-items: center;
+  /* wrap: sin esto la barra de una sola fila desbordaba ~258px a 375px (regresión real de overflow). */
+  flex-wrap: wrap;
   gap: 1rem;
   padding: 0.75rem 1.5rem;
   background: #1a1a2e;

@@ -1,0 +1,43 @@
+name: Lighthouse CI
+
+# Corre Lighthouse sobre el bundle de producción del frontend en cada push/PR a main.
+# La app está detrás de login, así que se audita el shell público (index -> /login):
+# mide performance, accesibilidad, best-practices y SEO del arranque de la SPA.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/lighthouse.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/lighthouse.yml"
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build
+
+      # autorun = collect (contra ./dist/frontend/browser) + assert (umbrales de
+      # lighthouserc.json) + upload (reporte a temporary-public-storage, link en el log).
+      # ubuntu-latest ya trae Google Chrome preinstalado, que Lighthouse detecta solo.
+      - name: Run Lighthouse CI
+        run: npx --yes @lhci/cli@0.14.x autorun
