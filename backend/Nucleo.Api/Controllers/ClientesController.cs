@@ -23,11 +23,12 @@ public class ClientesController : ControllerBase
         _service = service;
     }
 
-    /// <summary>Lista todos los clientes.</summary>
+    /// <summary>Lista clientes, paginado (20 por página por defecto).</summary>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<ClienteResponseDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<ClienteResponseDto>>> ObtenerTodos(CancellationToken ct)
-        => Ok(await _service.ObtenerTodosAsync(ct));
+    [ProducesResponseType(typeof(ResultadoPaginadoDto<ClienteResponseDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ResultadoPaginadoDto<ClienteResponseDto>>> ObtenerTodos(
+        [FromQuery] int pagina = 1, [FromQuery] int tamano = 20, CancellationToken ct = default)
+        => Ok(await _service.ObtenerTodosAsync(pagina, tamano, ct));
 
     /// <summary>Obtiene un cliente por id.</summary>
     [HttpGet("{id:int}", Name = "ObtenerClientePorId")]

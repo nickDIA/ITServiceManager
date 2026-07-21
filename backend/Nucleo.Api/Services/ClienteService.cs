@@ -18,10 +18,20 @@ public class ClienteService : IClienteService
         _repositorio = repositorio;
     }
 
-    public async Task<IReadOnlyList<ClienteResponseDto>> ObtenerTodosAsync(CancellationToken ct = default)
+    public async Task<ResultadoPaginadoDto<ClienteResponseDto>> ObtenerTodosAsync(int pagina, int tamano, CancellationToken ct = default)
     {
-        var clientes = await _repositorio.ObtenerTodosAsync(ct);
-        return clientes.Select(MapearAResponse).ToList();
+        pagina = Math.Max(1, pagina);
+        tamano = Math.Clamp(tamano, 1, 100);
+
+        var (items, total) = await _repositorio.ObtenerPaginadoAsync(pagina, tamano, ct);
+
+        return new ResultadoPaginadoDto<ClienteResponseDto>
+        {
+            Items = items.Select(MapearAResponse).ToList(),
+            Pagina = pagina,
+            TamanoPagina = tamano,
+            TotalRegistros = total
+        };
     }
 
     public async Task<ClienteResponseDto?> ObtenerPorIdAsync(int id, CancellationToken ct = default)

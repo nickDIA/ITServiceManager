@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Cliente } from '../../core/models/nucleo.models';
 import { AuthService } from '../../core/services/auth.service';
 import { NucleoApiService } from '../../core/services/nucleo-api.service';
@@ -9,8 +9,10 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog
 
 /**
  * Lista + alta/edición de clientes. La LISTA se consume con async pipe (el template
- * se suscribe/desuscribe solo); las ACCIONES (crear, actualizar, borrar) usan subscribe
- * imperativo porque son eventos puntuales, no flujos que el template deba observar.
+ * se suscribe/desuscribe solo) sobre un BehaviorSubject que acumula páginas; las ACCIONES
+ * (crear, actualizar, borrar) usan subscribe imperativo porque son eventos puntuales, no
+ * flujos que el template deba observar. El scroll infinito ("Cargar más") empuja páginas
+ * nuevas al mismo subject en vez de reemplazar el patrón por uno imperativo.
  */
 @Component({
   selector: 'app-clientes',
@@ -23,7 +25,15 @@ export class ClientesComponent {
   private readonly confirmDialog = inject(ConfirmDialogService);
   readonly auth = inject(AuthService);
 
-  clientes$: Observable<Cliente[]> = this.api.obtenerClientes();
+  private static readonly TAMANO_PAGINA = 20;
+
+  private paginaActual = 0;
+  private acumulado: Cliente[] = [];
+  private readonly clientesSubject = new BehaviorSubject<Cliente[]>([]);
+  readonly clientes$ = this.clientesSubject.asObservable();
+
+  readonly hayMas = signal(true);
+  readonly cargandoMas = signal(false);
 
   readonly editandoId = signal<number | null>(null);
   readonly error = signal<string | null>(null);
@@ -37,8 +47,34 @@ export class ClientesComponent {
     activo: [true]
   });
 
+  constructor() {
+    this.cargarPagina(1, true);
+  }
+
+  private cargarPagina(pagina: number, reiniciar: boolean): void {
+    this.api.obtenerClientes(pagina, ClientesComponent.TAMANO_PAGINA).subscribe({
+      next: (resultado) => {
+        this.paginaActual = pagina;
+        this.acumulado = reiniciar ? resultado.items : [...this.acumulado, ...resultado.items];
+        this.clientesSubject.next(this.acumulado);
+        this.hayMas.set(resultado.hayMas);
+        this.cargandoMas.set(false);
+      },
+      error: () => {
+        this.cargandoMas.set(false);
+        this.error.set('No se pudieron cargar los clientes.');
+      }
+    });
+  }
+
+  cargarMas(): void {
+    if (!this.hayMas() || this.cargandoMas()) return;
+    this.cargandoMas.set(true);
+    this.cargarPagina(this.paginaActual + 1, false);
+  }
+
   private recargar(): void {
-    this.clientes$ = this.api.obtenerClientes();
+    this.cargarPagina(1, true);
   }
 
   iniciarEdicion(cliente: Cliente): void {

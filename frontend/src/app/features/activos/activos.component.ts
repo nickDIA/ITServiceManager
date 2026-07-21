@@ -27,10 +27,18 @@ export class ActivosComponent {
   readonly transiciones = TRANSICIONES_ACTIVO;
   readonly tiposActivo = TIPOS_ACTIVO;
 
+  private static readonly TAMANO_PAGINA = 20;
+  /** Tamaño generoso para dropdowns que necesitan "todos los clientes", no una página. */
+  private static readonly TAMANO_DROPDOWN = 200;
+
   readonly clientes = signal<Cliente[]>([]);
   readonly activos = signal<Activo[]>([]);
   readonly cargando = signal(true);
   readonly error = signal<string | null>(null);
+
+  private paginaActual = 1;
+  readonly hayMas = signal(true);
+  readonly cargandoMas = signal(false);
 
   /** Filtro por cliente: null = todos. El effect de abajo reacciona a cada cambio. */
   readonly filtroClienteId = signal<number | null>(null);
@@ -54,15 +62,18 @@ export class ActivosComponent {
   });
 
   constructor() {
-    this.api.obtenerClientes().subscribe((c) => this.clientes.set(c));
+    this.api.obtenerClientes(1, ActivosComponent.TAMANO_DROPDOWN).subscribe((r) => this.clientes.set(r.items));
 
-    // El effect ve el signal del filtro: cambiarlo (desde el select) dispara la recarga.
+    // El effect ve el signal del filtro: cambiarlo (desde el select) dispara la recarga
+    // desde la página 1 — cambiar de filtro siempre reinicia el scroll infinito.
     effect(() => {
       const clienteId = this.filtroClienteId();
       this.cargando.set(true);
-      this.api.obtenerActivos(clienteId).subscribe({
-        next: (a) => {
-          this.activos.set(a);
+      this.paginaActual = 1;
+      this.api.obtenerActivos(clienteId, 1, ActivosComponent.TAMANO_PAGINA).subscribe({
+        next: (r) => {
+          this.activos.set(r.items);
+          this.hayMas.set(r.hayMas);
           this.cargando.set(false);
         },
         error: () => {
@@ -73,10 +84,32 @@ export class ActivosComponent {
     });
   }
 
+  cargarMas(): void {
+    if (!this.hayMas() || this.cargandoMas()) return;
+    this.cargandoMas.set(true);
+    const siguiente = this.paginaActual + 1;
+    this.api.obtenerActivos(this.filtroClienteId(), siguiente, ActivosComponent.TAMANO_PAGINA).subscribe({
+      next: (r) => {
+        this.paginaActual = siguiente;
+        this.activos.update((lista) => [...lista, ...r.items]);
+        this.hayMas.set(r.hayMas);
+        this.cargandoMas.set(false);
+      },
+      error: () => {
+        this.error.set('No se pudieron cargar más activos.');
+        this.cargandoMas.set(false);
+      }
+    });
+  }
+
   private recargar(): void {
     // Reasignar el mismo valor no dispara el effect (igualdad referencial), así que
-    // recargamos explícito tras una mutación.
-    this.api.obtenerActivos(this.filtroClienteId()).subscribe((a) => this.activos.set(a));
+    // recargamos explícito tras una mutación — siempre volviendo a la página 1.
+    this.paginaActual = 1;
+    this.api.obtenerActivos(this.filtroClienteId(), 1, ActivosComponent.TAMANO_PAGINA).subscribe((r) => {
+      this.activos.set(r.items);
+      this.hayMas.set(r.hayMas);
+    });
   }
 
   cambiarFiltro(valor: string): void {

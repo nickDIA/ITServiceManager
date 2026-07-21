@@ -204,3 +204,9 @@ body {
   font-style: italic;
   padding: 1rem 0;
 }
+
+.cargar-mas {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}

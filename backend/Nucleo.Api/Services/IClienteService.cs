@@ -5,7 +5,8 @@ namespace Nucleo.Api.Services;
 /// <summary>Lógica de negocio de Cliente. Trabaja con DTOs, nunca expone entidades.</summary>
 public interface IClienteService
 {
-    Task<IReadOnlyList<ClienteResponseDto>> ObtenerTodosAsync(CancellationToken ct = default);
+    /// <summary>Página de clientes ordenados por nombre. tamano se acota entre 1 y 100.</summary>
+    Task<ResultadoPaginadoDto<ClienteResponseDto>> ObtenerTodosAsync(int pagina, int tamano, CancellationToken ct = default);
 
     Task<ClienteResponseDto?> ObtenerPorIdAsync(int id, CancellationToken ct = default);
 

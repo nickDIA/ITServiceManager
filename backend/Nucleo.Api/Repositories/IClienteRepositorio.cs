@@ -13,4 +13,7 @@ public interface IClienteRepositorio : IRepositorio<Cliente>
 
     /// <summary>¿El cliente tiene activos asociados? (se usa para bloquear el borrado).</summary>
     Task<bool> TieneActivosAsync(int clienteId, CancellationToken ct = default);
+
+    /// <summary>Página de clientes ordenados por nombre, más el total de registros (para saber si hay más páginas).</summary>
+    Task<(IReadOnlyList<Cliente> Items, int Total)> ObtenerPaginadoAsync(int pagina, int tamano, CancellationToken ct = default);
 }

@@ -26,6 +26,9 @@ export class TicketsComponent {
   private readonly confirmDialog = inject(ConfirmDialogService);
   readonly auth = inject(AuthService);
 
+  /** Tamaño generoso: estos dropdowns necesitan "todos", no una página. */
+  private static readonly TAMANO_DROPDOWN = 200;
+
   readonly transiciones = TRANSICIONES_TICKET;
   readonly estadosTicket = ESTADOS_TICKET;
   readonly prioridades = PRIORIDADES;
@@ -61,16 +64,17 @@ export class TicketsComponent {
 
   constructor() {
     this.recargar();
-    this.api.obtenerClientes().subscribe((c) => this.clientes.set(c));
+    this.api.obtenerClientes(1, TicketsComponent.TAMANO_DROPDOWN).subscribe((r) => this.clientes.set(r.items));
     this.api.obtenerTecnicos().subscribe((t) => this.tecnicos.set(t));
 
     // El selector de activos depende del cliente elegido en el form (regla del backend:
-    // el activo debe pertenecer al mismo cliente del ticket).
+    // el activo debe pertenecer al mismo cliente del ticket). Un solo cliente nunca tiene
+    // cientos de activos, así que una página grande cubre el caso real sin paginar el select.
     this.form.controls.clienteId.valueChanges.subscribe((clienteId) => {
       this.form.controls.activoId.setValue(null);
       const id = Number(clienteId);
       if (id > 0) {
-        this.api.obtenerActivos(id).subscribe((a) => this.activosDelCliente.set(a));
+        this.api.obtenerActivos(id, 1, TicketsComponent.TAMANO_DROPDOWN).subscribe((r) => this.activosDelCliente.set(r.items));
       } else {
         this.activosDelCliente.set([]);
       }

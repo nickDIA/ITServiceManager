@@ -21,6 +21,13 @@ export class DashboardComponent {
   private readonly api = inject(NucleoApiService);
   readonly auth = inject(AuthService);
 
+  /**
+   * activosPorEstado se deriva client-side del listado completo (misma razón por la que
+   * Tickets se dejó sin paginar): una página parcial daría una distribución incorrecta.
+   * Tamaño generoso en vez de paginar de verdad — ver conversación sobre alcance de paginación.
+   */
+  private static readonly TAMANO_TODOS_LOS_ACTIVOS = 500;
+
   readonly tickets = signal<Ticket[]>([]);
   readonly activos = signal<Activo[]>([]);
   readonly resumenServidor = signal<ReporteDashboard | null>(null);
@@ -45,7 +52,7 @@ export class DashboardComponent {
       next: (t) => this.tickets.set(t),
       error: () => this.error.set('No se pudieron cargar los datos del dashboard.')
     });
-    this.api.obtenerActivos().subscribe((a) => this.activos.set(a));
+    this.api.obtenerActivos(null, 1, DashboardComponent.TAMANO_TODOS_LOS_ACTIVOS).subscribe((r) => this.activos.set(r.items));
     this.api.obtenerDashboard().subscribe((r) => this.resumenServidor.set(r));
   }
 

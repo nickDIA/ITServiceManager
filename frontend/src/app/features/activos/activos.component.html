@@ -158,5 +158,12 @@
         }
       </tbody>
     </table>
+    @if (hayMas()) {
+      <div class="cargar-mas">
+        <button class="btn secundario" type="button" (click)="cargarMas()" [disabled]="cargandoMas()">
+          {{ cargandoMas() ? 'Cargando…' : 'Cargar más' }}
+        </button>
+      </div>
+    }
   }
 </div>

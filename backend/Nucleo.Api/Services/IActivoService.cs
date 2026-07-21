@@ -4,7 +4,8 @@ namespace Nucleo.Api.Services;
 
 public interface IActivoService
 {
-    Task<IReadOnlyList<ActivoResponseDto>> ObtenerTodosAsync(int? clienteId, CancellationToken ct = default);
+    /// <summary>Página de activos ordenados por nombre, opcionalmente filtrada por cliente. tamano se acota entre 1 y 100.</summary>
+    Task<ResultadoPaginadoDto<ActivoResponseDto>> ObtenerTodosAsync(int? clienteId, int pagina, int tamano, CancellationToken ct = default);
 
     Task<ActivoResponseDto?> ObtenerPorIdAsync(int id, CancellationToken ct = default);
 

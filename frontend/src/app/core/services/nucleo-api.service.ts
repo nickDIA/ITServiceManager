@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   Activo, ActualizarCliente, Cliente, CrearActivo, CrearCliente, CrearTicket,
-  EstadoActivo, EstadoTicket, HistorialActivo, ReporteDashboard, Tecnico, Ticket
+  EstadoActivo, EstadoTicket, HistorialActivo, ReporteDashboard, ResultadoPaginado, Tecnico, Ticket
 } from '../models/nucleo.models';
 
 /**
@@ -17,8 +17,10 @@ export class NucleoApiService {
   private readonly api = environment.apiUrl;
 
   // ------------------------------------------------ Clientes
-  obtenerClientes(): Observable<Cliente[]> {
-    return this.http.get<Cliente[]>(`${this.api}/clientes`);
+  /** Página de clientes ordenados por nombre. tamano se acota a 100 en el backend. */
+  obtenerClientes(pagina: number, tamano: number): Observable<ResultadoPaginado<Cliente>> {
+    const params = new HttpParams().set('pagina', pagina).set('tamano', tamano);
+    return this.http.get<ResultadoPaginado<Cliente>>(`${this.api}/clientes`, { params });
   }
 
   crearCliente(dto: CrearCliente): Observable<Cliente> {
@@ -34,10 +36,11 @@ export class NucleoApiService {
   }
 
   // ------------------------------------------------ Activos
-  obtenerActivos(clienteId?: number | null): Observable<Activo[]> {
-    let params = new HttpParams();
+  /** Página de activos ordenados por nombre, opcionalmente filtrada por cliente. */
+  obtenerActivos(clienteId: number | null | undefined, pagina: number, tamano: number): Observable<ResultadoPaginado<Activo>> {
+    let params = new HttpParams().set('pagina', pagina).set('tamano', tamano);
     if (clienteId) params = params.set('clienteId', clienteId);
-    return this.http.get<Activo[]>(`${this.api}/activos`, { params });
+    return this.http.get<ResultadoPaginado<Activo>>(`${this.api}/activos`, { params });
   }
 
   crearActivo(dto: CrearActivo): Observable<Activo> {

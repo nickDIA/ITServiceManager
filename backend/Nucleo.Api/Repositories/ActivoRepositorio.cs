@@ -10,14 +10,20 @@ public class ActivoRepositorio : Repositorio<Activo>, IActivoRepositorio
     {
     }
 
-    public async Task<IReadOnlyList<Activo>> ObtenerTodosConClienteAsync(int? clienteId, CancellationToken ct = default)
+    public async Task<(IReadOnlyList<Activo> Items, int Total)> ObtenerPaginadoConClienteAsync(
+        int pagina, int tamano, int? clienteId, CancellationToken ct = default)
     {
         var query = _dbSet.Include(a => a.Cliente).AsNoTracking().AsQueryable();
 
         if (clienteId is not null)
             query = query.Where(a => a.ClienteId == clienteId);
 
-        return await query.OrderBy(a => a.Nombre).ToListAsync(ct);
+        var ordenada = query.OrderBy(a => a.Nombre);
+
+        var total = await ordenada.CountAsync(ct);
+        var items = await ordenada.Skip((pagina - 1) * tamano).Take(tamano).ToListAsync(ct);
+
+        return (items, total);
     }
 
     public async Task<Activo?> ObtenerPorIdConClienteAsync(int id, CancellationToken ct = default)

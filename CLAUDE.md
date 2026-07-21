@@ -101,6 +101,12 @@ CORS is enabled (`AddCors`/`UseCors("Frontend")` in `Program.cs`) for `http://lo
 - Delete behaviors are deliberately mixed to avoid SQL Server's "multiple cascade paths" restriction: `Activo → HistorialActivo` is the only `Cascade`; `Tecnico → HistorialActivo` and `Cliente → (Activo/Ticket/Contrato)` are `Restrict`; the nullable `Ticket → Activo` FK is `SetNull`. When adding new FK relationships, check for cascade-path conflicts before defaulting to `Cascade`.
 - `DbSeeder.cs` seeds `Clientes` and `Tecnicos` **independently and idempotently** (each gated on its own `AnyAsync` check, not a single top-level check) — follow this pattern when adding new seed data so it isn't silently skipped just because some other table already has rows.
 
+### Paginación server-side (Clientes y Activos)
+
+`GET /api/clientes` and `GET /api/activos` return `ResultadoPaginadoDto<T>` (`Models/DTOs/ResultadoPaginadoDto.cs`) — `{ items, pagina, tamanoPagina, totalRegistros, hayMas }` — instead of a raw array. `pagina`/`tamano` are optional query params (default `1`/`20`); `ClienteService`/`ActivoService` clamp `tamano` to `[1, 100]` server-side regardless of what the client asks for, so a caller can't force a full-table scan by requesting an absurd page size. `IClienteRepositorio.ObtenerPaginadoAsync` / `IActivoRepositorio.ObtenerPaginadoConClienteAsync` do the `Skip`/`Take`, ordered by `Nombre`.
+
+**Deliberately NOT paginated:** `GET /api/tickets` and the activo/cliente lists that back dropdowns or aggregations. Both `TicketsComponent`'s kanban (`computed` columns grouped by `estado`) and `DashboardComponent`'s `activosPorEstado` (`computed` over the full `activos` signal) derive their view from the *entire* result set — paginating either would silently make the board/chart show a partial, misleading picture instead of failing loudly. The dropdown-populating calls (client selector in Activos/Tickets, activo-of-selected-client selector in Tickets) request a large page (`tamano=200`, or `500` for the dashboard's activos) rather than truly paginating, since a single MSP's client/asset counts don't realistically approach that in the near term — revisit only if that assumption stops holding, not preemptively.
+
 ### Frontend (Fase 5-6)
 
 Standalone Angular 19, no NgModules, no SSR. Structure under `frontend/src/app/`:
@@ -112,8 +118,8 @@ Standalone Angular 19, no NgModules, no SSR. Structure under `frontend/src/app/`
 - `features/*` are lazy-loaded standalone components via `loadComponent` in `app.routes.ts` (not `loadChildren`/NgModules) — each feature lands in its own chunk.
 
 Where each spec concept deliberately lives (Fase 6):
-- **async pipe**: `features/clientes` list (`clientes$ | async`); its mutations use imperative subscribe — the async-vs-subscribe contrast is intentional.
-- **effect**: `features/activos` — the cliente filter is a signal and an `effect` in the constructor reloads the list when it changes; the `<select>` only writes the signal. Note: mutations call an explicit `recargar()` because re-setting the same filter value doesn't retrigger the effect.
+- **async pipe**: `features/clientes` list (`clientes$ | async`); its mutations use imperative subscribe — the async-vs-subscribe contrast is intentional. Since the server-side pagination change, `clientes$` is backed by a `BehaviorSubject` that `cargarMas()` pushes accumulated pages into, rather than a bare `Observable` reassigned per request — the template still only ever touches it via `| async`.
+- **effect**: `features/activos` — the cliente filter is a signal and an `effect` in the constructor reloads the list (page 1) when it changes; the `<select>` only writes the signal. Note: mutations call an explicit `recargar()` because re-setting the same filter value doesn't retrigger the effect. `cargarMas()` appends the next page to the `activos` signal without going through the effect.
 - **computed**: `features/tickets` board — columns and per-column/global counters all derive from one `tickets` signal; mutations only `update()` that signal and everything re-renders (validated live: counters moved without reload). Also `features/dashboard`, which computes GROUP BY distributions client-side from raw lists, while financial metrics (ingresos/promedio/clientes sin tickets) still come from `GET /api/reportes/dashboard` since they cross tables the front doesn't load.
 - **Role-based UI**: write forms/buttons render only if `auth.puedeEscribir()`; the Admin nav link only if `esAdmin()`. This is UX only — the API's 403 remains the enforcement.
 
@@ -128,5 +134,6 @@ Run both servers together to develop against this (`dotnet run` + `npm start --p
 - **Fase 3 (done):** JWT auth + BCrypt, role-based `[Authorize]` on all domain endpoints.
 - **Fase 4 (done):** Ticket CRUD + state machine, JOIN-based ticket listing, dashboard aggregations. Contrato/Ticket seed data added (both tables existed since the Fase 1 migration but were never seeded until now).
 - **Fase 5 (done):** Angular 19 project structure, JWT interceptor, `authGuard`/`roleGuard`, login screen. Validated end-to-end in a real browser (not just Postman) — this is what surfaced the CORS and `MapInboundClaims` issues documented above.
-- **Fase 6 (done):** real feature UIs — Clientes (async pipe), Activos (effect-driven filter, state change + audit trail), Tickets kanban board and dashboard (computed signals), role-aware UI. All 6 planned phases complete; remaining ideas are the spec's stretch goals (SLA alerts, server-side pagination, SignalR, exports).
+- **Fase 6 (done):** real feature UIs — Clientes (async pipe), Activos (effect-driven filter, state change + audit trail), Tickets kanban board and dashboard (computed signals), role-aware UI. All 6 planned phases complete.
+- **Server-side pagination (done, post-Fase 6):** `GET /api/clientes` and `GET /api/activos` paginate with infinite scroll ("Cargar más") on the frontend — see "Paginación server-side" above for scope and why Tickets/dashboard aggregations were deliberately left out. Remaining stretch goals from the spec: SLA alerts, SignalR, exports.
 - See `C:\Users\domin\Downloads\proyecto-nucleo-spec (1).md` for the original spec — this project follows it, reconciled against choices made before it was shared (see project memory).

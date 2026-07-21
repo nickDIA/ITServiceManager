@@ -31,6 +31,15 @@ export const TRANSICIONES_TICKET: Record<EstadoTicket, EstadoTicket[]> = {
   Cancelado: []
 };
 
+/** Espejo de ResultadoPaginadoDto<T> del backend. */
+export interface ResultadoPaginado<T> {
+  items: T[];
+  pagina: number;
+  tamanoPagina: number;
+  totalRegistros: number;
+  hayMas: boolean;
+}
+
 // ----------------------------------------------------------------- Cliente
 
 export interface Cliente {

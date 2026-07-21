@@ -33,12 +33,22 @@ public class ActivoService : IActivoService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IReadOnlyList<ActivoResponseDto>> ObtenerTodosAsync(int? clienteId, CancellationToken ct = default)
+    public async Task<ResultadoPaginadoDto<ActivoResponseDto>> ObtenerTodosAsync(int? clienteId, int pagina, int tamano, CancellationToken ct = default)
     {
-        var activos = await _activoRepositorio.ObtenerTodosConClienteAsync(clienteId, ct);
-        // Lambda explícita (no method group): MapearAResponse tiene un parámetro opcional,
-        // lo que vuelve ambiguo para el compilador elegir entre los overloads de Select.
-        return activos.Select(a => MapearAResponse(a)).ToList();
+        pagina = Math.Max(1, pagina);
+        tamano = Math.Clamp(tamano, 1, 100);
+
+        var (items, total) = await _activoRepositorio.ObtenerPaginadoConClienteAsync(pagina, tamano, clienteId, ct);
+
+        return new ResultadoPaginadoDto<ActivoResponseDto>
+        {
+            // Lambda explícita (no method group): MapearAResponse tiene un parámetro opcional,
+            // lo que vuelve ambiguo para el compilador elegir entre los overloads de Select.
+            Items = items.Select(a => MapearAResponse(a)).ToList(),
+            Pagina = pagina,
+            TamanoPagina = tamano,
+            TotalRegistros = total
+        };
     }
 
     public async Task<ActivoResponseDto?> ObtenerPorIdAsync(int id, CancellationToken ct = default)

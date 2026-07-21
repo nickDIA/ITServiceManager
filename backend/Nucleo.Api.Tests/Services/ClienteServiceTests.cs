@@ -34,15 +34,29 @@ public class ClienteServiceTests
     // ------------------------------------------------------------ Lectura
 
     [Fact]
-    public async Task ObtenerTodosAsync_MapeaEntidadesADto()
+    public async Task ObtenerTodosAsync_MapeaEntidadesADtoYArmaLaEnvoltura()
     {
-        _repo.Setup(r => r.ObtenerTodosAsync(It.IsAny<CancellationToken>()))
-             .ReturnsAsync([ClienteDemo(1), ClienteDemo(2)]);
+        _repo.Setup(r => r.ObtenerPaginadoAsync(1, 20, It.IsAny<CancellationToken>()))
+             .ReturnsAsync(((IReadOnlyList<Cliente>)[ClienteDemo(1), ClienteDemo(2)], 2));
 
-        var resultado = await _service.ObtenerTodosAsync();
+        var resultado = await _service.ObtenerTodosAsync(1, 20);
 
-        Assert.Equal(2, resultado.Count);
-        Assert.Equal("DNO950101AB1", resultado[0].Rfc);
+        Assert.Equal(2, resultado.Items.Count);
+        Assert.Equal("DNO950101AB1", resultado.Items[0].Rfc);
+        Assert.Equal(2, resultado.TotalRegistros);
+        Assert.False(resultado.HayMas);
+    }
+
+    [Fact]
+    public async Task ObtenerTodosAsync_TamanoFueraDeRango_SeAcotaEntre1Y100()
+    {
+        _repo.Setup(r => r.ObtenerPaginadoAsync(1, 100, It.IsAny<CancellationToken>()))
+             .ReturnsAsync(((IReadOnlyList<Cliente>)[], 0));
+
+        await _service.ObtenerTodosAsync(0, 500);
+
+        // pagina 0 se sube a 1, tamano 500 se acota a 100 — el repo debe recibir esos valores acotados.
+        _repo.Verify(r => r.ObtenerPaginadoAsync(1, 100, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

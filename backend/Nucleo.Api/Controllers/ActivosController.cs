@@ -21,11 +21,12 @@ public class ActivosController : ControllerBase
         _service = service;
     }
 
-    /// <summary>Lista activos. Filtra por cliente con ?clienteId=.</summary>
+    /// <summary>Lista activos, paginado (20 por página por defecto). Filtra por cliente con ?clienteId=.</summary>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<ActivoResponseDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<ActivoResponseDto>>> ObtenerTodos([FromQuery] int? clienteId, CancellationToken ct)
-        => Ok(await _service.ObtenerTodosAsync(clienteId, ct));
+    [ProducesResponseType(typeof(ResultadoPaginadoDto<ActivoResponseDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ResultadoPaginadoDto<ActivoResponseDto>>> ObtenerTodos(
+        [FromQuery] int? clienteId, [FromQuery] int pagina = 1, [FromQuery] int tamano = 20, CancellationToken ct = default)
+        => Ok(await _service.ObtenerTodosAsync(clienteId, pagina, tamano, ct));
 
     [HttpGet("{id:int}", Name = "ObtenerActivoPorId")]
     [ProducesResponseType(typeof(ActivoResponseDto), StatusCodes.Status200OK)]

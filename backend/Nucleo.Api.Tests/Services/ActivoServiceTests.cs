@@ -45,6 +45,33 @@ public class ActivoServiceTests
         Motivo = "Falla detectada en pruebas"
     };
 
+    // ------------------------------------------------------------ Listar (paginado)
+
+    [Fact]
+    public async Task ObtenerTodosAsync_MapeaYArmaLaEnvolturaConElFiltroDeCliente()
+    {
+        _activoRepo.Setup(r => r.ObtenerPaginadoConClienteAsync(1, 20, 3, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync(((IReadOnlyList<Activo>)[ActivoDemo(1)], 1));
+
+        var resultado = await _service.ObtenerTodosAsync(clienteId: 3, pagina: 1, tamano: 20);
+
+        Assert.Single(resultado.Items);
+        Assert.Equal(1, resultado.TotalRegistros);
+        Assert.False(resultado.HayMas);
+        _activoRepo.Verify(r => r.ObtenerPaginadoConClienteAsync(1, 20, 3, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ObtenerTodosAsync_TamanoFueraDeRango_SeAcotaEntre1Y100()
+    {
+        _activoRepo.Setup(r => r.ObtenerPaginadoConClienteAsync(1, 100, null, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync(((IReadOnlyList<Activo>)[], 0));
+
+        await _service.ObtenerTodosAsync(clienteId: null, pagina: 0, tamano: 500);
+
+        _activoRepo.Verify(r => r.ObtenerPaginadoConClienteAsync(1, 100, null, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
     // ------------------------------------------------------------ Crear
 
     [Fact]
