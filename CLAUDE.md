@@ -116,6 +116,14 @@ Everything else is frontend-only, computed from that one number — no new endpo
 - Only `Abierto`/`EnProgreso` tickets are eligible (a closed ticket isn't "at risk" anymore); `>= 100%` of `SlaHoras` elapsed → `incumplido` (red badge), `>= 80%` → `riesgo` (amber badge), otherwise no badge at all — showing a badge only when there's something to act on, not a permanent "en tiempo" state on every card.
 - Deliberately **not** on the Dashboard (see the pagination note above for the reasoning behind picking one surface over the other for this kind of alert): it's a technician-facing, per-ticket signal, not a manager-facing aggregate.
 
+### Integración continua (GitHub Actions)
+
+Two workflows under `.github/workflows/`, both on push/PR to `main`:
+- **`ci.yml`** — the general build+test gate, two parallel jobs. **backend**: `dotnet restore/build Nucleo.slnx` (Release) + `dotnet test` on the `Nucleo.Api.Tests` project (the 66 Moq-based Service tests — no SQL Server, no `Jwt:Key` secret needed, since those are only required to *start the web host*, not to build/test the assemblies). **frontend**: `npm ci` + `npm run build` + `npm test` headless (`--watch=false --browsers=ChromeHeadless`; ubuntu-latest ships Chrome). Both jobs validated locally with the exact CI commands before landing.
+- **`lighthouse.yml`** — the frontend performance/a11y gate (see "Calidad de frontend y CI" below). Path-filtered to `frontend/**` so it only runs when the frontend changes.
+
+`dotnet-version: "10.0.x"` in setup-dotnet because the project targets **net10.0** — GitHub runners don't ship it preinstalled, so the SDK is installed per-run. Restore/build/test use the **`.slnx`** solution directly (SDK 10 supports the new XML solution format natively).
+
 ### Calidad de frontend y CI (Lighthouse)
 
 A quality pass audited the real, running app (both servers up, in a real browser) — the checks are adapted to what an auth-gated internal SPA needs, **not** copied from a public-site QA checklist. SEO machinery for public sites (Open Graph, `hreflang`, sitemap, prerender) is deliberately **not** here — Núcleo is login-gated, single-language, undeployed, so it would be speculative generality.
@@ -155,5 +163,5 @@ Run both servers together to develop against this (`dotnet run` + `npm start --p
 - **Fase 6 (done):** real feature UIs — Clientes (async pipe), Activos (effect-driven filter, state change + audit trail), Tickets kanban board and dashboard (computed signals), role-aware UI. All 6 planned phases complete.
 - **Server-side pagination (done, post-Fase 6):** `GET /api/clientes` and `GET /api/activos` paginate with infinite scroll ("Cargar más") on the frontend — see "Paginación server-side" above for scope and why Tickets/dashboard aggregations were deliberately left out.
 - **Alertas de SLA (done, post-Fase 6):** per-ticket risk badge on the Tickets kanban — see "Alertas de SLA" above.
-- **Quality pass + Lighthouse CI (done, post-Fase 6):** axe (all routes AA-clean), responsive/overflow at 375/1280, and a Lighthouse CI GitHub Action — see "Calidad de frontend y CI" above. Remaining stretch goals from the spec: SignalR, exports.
+- **Quality pass + CI (done, post-Fase 6):** axe (all routes AA-clean), responsive/overflow at 375/1280, plus two GitHub Actions workflows — `ci.yml` (backend + frontend build/test) and `lighthouse.yml` (frontend perf/a11y). See "Integración continua" and "Calidad de frontend y CI" above. Remaining stretch goals from the spec: SignalR, exports.
 - See `C:\Users\domin\Downloads\proyecto-nucleo-spec (1).md` for the original spec — this project follows it, reconciled against choices made before it was shared (see project memory).

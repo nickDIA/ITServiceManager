@@ -1,0 +1,60 @@
+name: CI
+
+# CI general del proyecto: compila y prueba backend (.NET) y frontend (Angular)
+# en cada push/PR a main. Los dos jobs corren en paralelo.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend · .NET (build + tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      # Los tests de Services usan repositorios mockeados (Moq), sin base de datos:
+      # no hace falta SQL Server ni el user-secret Jwt:Key (Program.cs solo lo exige
+      # al arrancar el host web, no al construir/probar los ensamblados).
+      - name: Restore
+        run: dotnet restore Nucleo.slnx
+
+      - name: Build
+        run: dotnet build Nucleo.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: >-
+          dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
+          --configuration Release --no-build --verbosity normal
+
+  frontend:
+    name: Frontend · Angular (build + tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Karma headless: ubuntu-latest trae Google Chrome preinstalado, que
+      # karma-chrome-launcher detecta solo. --watch=false para no colgar el job.
+      - name: Unit tests
+        run: npm test -- --watch=false --browsers=ChromeHeadless
