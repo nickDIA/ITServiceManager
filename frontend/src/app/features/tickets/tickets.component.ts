@@ -18,6 +18,17 @@ export interface RiesgoSla {
   horasTranscurridas: number;
 }
 
+/** Estado de UNA columna del kanban: su propia página, su propio total y su propio "cargar más". */
+export interface ColumnaTickets {
+  estado: EstadoTicket;
+  tickets: Ticket[];
+  /** Total de tickets en ese estado (del servidor), no solo los cargados. */
+  total: number;
+  pagina: number;
+  hayMas: boolean;
+  cargando: boolean;
+}
+
 /**
  * Tablero de tickets agrupado por estado. Las columnas y sus contadores son COMPUTED
  * derivados del signal `tickets`: al cambiar el estado de un ticket solo se actualiza
@@ -43,24 +54,32 @@ export class TicketsComponent {
   readonly estadosTicket = ESTADOS_TICKET;
   readonly prioridades = PRIORIDADES;
 
-  readonly tickets = signal<Ticket[]>([]);
+  /** Cuántos tickets carga cada columna por página. */
+  private static readonly TAMANO_COLUMNA = 20;
+
   readonly clientes = signal<Cliente[]>([]);
   readonly tecnicos = signal<Tecnico[]>([]);
   readonly activosDelCliente = signal<Activo[]>([]);
   readonly error = signal<string | null>(null);
   readonly mostrandoForm = signal(false);
 
-  /** Columnas del tablero, derivadas: NO se recalculan a mano en ningún lado. */
-  readonly columnas = computed(() =>
-    this.estadosTicket.map((estado) => ({
-      estado,
-      tickets: this.tickets().filter((t) => t.estado === estado)
+  /**
+   * Una columna por estado, cada una con SU página. Antes esto era un `computed` que
+   * agrupaba un único signal con TODOS los tickets; a escala real eso significaba traer
+   * 200k filas (85 MB) en una sola respuesta. Ahora cada columna pide solo su página y
+   * el servidor devuelve además el total del estado, que es el contador de la columna.
+   */
+  readonly columnas = signal<ColumnaTickets[]>(
+    ESTADOS_TICKET.map((estado) => ({
+      estado, tickets: [], total: 0, pagina: 0, hayMas: false, cargando: true
     }))
   );
 
-  /** Contador global de abiertos (Abierto + EnProgreso), también derivado. */
-  readonly totalAbiertos = computed(
-    () => this.tickets().filter((t) => t.estado === 'Abierto' || t.estado === 'EnProgreso').length
+  /** Contador global de abiertos: suma de los TOTALES del servidor, no de lo cargado. */
+  readonly totalAbiertos = computed(() =>
+    this.columnas()
+      .filter((c) => c.estado === 'Abierto' || c.estado === 'EnProgreso')
+      .reduce((suma, c) => suma + c.total, 0)
   );
 
   /**
@@ -72,9 +91,11 @@ export class TicketsComponent {
   readonly riesgosSla = computed(() => {
     const ahora = Date.now();
     const mapa = new Map<number, RiesgoSla>();
-    for (const ticket of this.tickets()) {
-      const riesgo = this.calcularRiesgoSla(ticket, ahora);
-      if (riesgo) mapa.set(ticket.id, riesgo);
+    for (const columna of this.columnas()) {
+      for (const ticket of columna.tickets) {
+        const riesgo = this.calcularRiesgoSla(ticket, ahora);
+        if (riesgo) mapa.set(ticket.id, riesgo);
+      }
     }
     return mapa;
   });
@@ -100,7 +121,9 @@ export class TicketsComponent {
   });
 
   constructor() {
-    this.recargar();
+    // Una petición por columna (5), cada una de 20 filas, en vez de una sola de 200k.
+    for (const estado of ESTADOS_TICKET) this.cargarColumna(estado, 1, true);
+
     this.api.obtenerClientes(1, TicketsComponent.TAMANO_DROPDOWN).subscribe((r) => this.clientes.set(r.items));
     this.api.obtenerTecnicos().subscribe((t) => this.tecnicos.set(t));
 
@@ -118,11 +141,45 @@ export class TicketsComponent {
     });
   }
 
-  private recargar(): void {
-    this.api.obtenerTickets().subscribe({
-      next: (t) => this.tickets.set(t),
-      error: () => this.error.set('No se pudieron cargar los tickets.')
+  /** Aplica un cambio parcial a UNA columna, dejando las demás intactas. */
+  private parchearColumna(estado: EstadoTicket, cambio: Partial<ColumnaTickets>): void {
+    this.columnas.update((cols) => cols.map((c) => (c.estado === estado ? { ...c, ...cambio } : c)));
+  }
+
+  /**
+   * Carga una página de una columna. `reset` reemplaza sus tickets (carga inicial o refresco
+   * tras una mutación); si es false, los agrega ("cargar más" dentro de la columna).
+   */
+  private cargarColumna(estado: EstadoTicket, pagina: number, reset: boolean): void {
+    this.parchearColumna(estado, { cargando: true });
+
+    this.api.obtenerTickets(estado, pagina, TicketsComponent.TAMANO_COLUMNA).subscribe({
+      next: (r) => {
+        this.columnas.update((cols) =>
+          cols.map((c) =>
+            c.estado !== estado
+              ? c
+              : {
+                  ...c,
+                  tickets: reset ? r.items : [...c.tickets, ...r.items],
+                  total: r.totalRegistros,
+                  pagina: r.pagina,
+                  hayMas: r.hayMas,
+                  cargando: false
+                }
+          )
+        );
+      },
+      error: () => {
+        this.parchearColumna(estado, { cargando: false });
+        this.error.set('No se pudieron cargar los tickets.');
+      }
     });
+  }
+
+  cargarMas(columna: ColumnaTickets): void {
+    if (!columna.hayMas || columna.cargando) return;
+    this.cargarColumna(columna.estado, columna.pagina + 1, false);
   }
 
   crear(): void {
@@ -140,9 +197,9 @@ export class TicketsComponent {
       prioridad: v.prioridad,
       tecnicoId: Number(v.tecnicoId)
     }).subscribe({
-      next: (creado) => {
-        // Actualiza el signal localmente: columnas y contadores se recalculan solos.
-        this.tickets.update((lista) => [creado, ...lista]);
+      next: () => {
+        // Un ticket nace Abierto: refresca esa columna para que su total sea el del servidor.
+        this.cargarColumna('Abierto', 1, true);
         this.form.reset({ clienteId: 0, activoId: null, prioridad: 'Media', tecnicoId: 0 });
         this.mostrandoForm.set(false);
       },
@@ -152,10 +209,13 @@ export class TicketsComponent {
 
   cambiarEstado(ticket: Ticket, nuevoEstado: EstadoTicket): void {
     this.error.set(null);
+    const estadoOrigen = ticket.estado;
     this.api.cambiarEstadoTicket(ticket.id, nuevoEstado).subscribe({
-      next: (actualizado) => {
-        // Sustituye SOLO ese ticket en el signal: el tablero completo reacciona.
-        this.tickets.update((lista) => lista.map((t) => (t.id === actualizado.id ? actualizado : t)));
+      // El ticket cruza de columna: refresca ORIGEN y DESTINO para que ambos totales
+      // sigan viniendo del servidor (moverlo a mano dejaría los contadores mintiendo).
+      next: () => {
+        this.cargarColumna(estadoOrigen, 1, true);
+        this.cargarColumna(nuevoEstado, 1, true);
       },
       error: (err) => this.error.set(err.error?.detail ?? 'No se pudo cambiar el estado.')
     });
@@ -166,7 +226,7 @@ export class TicketsComponent {
     if (!confirmado) return;
     this.error.set(null);
     this.api.eliminarTicket(ticket.id).subscribe({
-      next: () => this.tickets.update((lista) => lista.filter((t) => t.id !== ticket.id)),
+      next: () => this.cargarColumna(ticket.estado, 1, true),
       error: (err) => this.error.set(err.error?.detail ?? 'No se pudo eliminar el ticket.')
     });
   }

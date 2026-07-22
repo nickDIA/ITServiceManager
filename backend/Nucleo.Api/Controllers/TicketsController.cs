@@ -20,12 +20,17 @@ public class TicketsController : ControllerBase
         _service = service;
     }
 
-    /// <summary>Lista tickets con cliente + activo + técnico ya resueltos. Filtra con ?clienteId= / ?tecnicoId= / ?estado=.</summary>
+    /// <summary>
+    /// Lista tickets paginados, con cliente + activo + técnico ya resueltos.
+    /// Filtra con ?clienteId= / ?tecnicoId= / ?estado=; pagina por defecto 1, tamano 20.
+    /// El kanban llama una vez por columna (?estado=) y usa totalRegistros como contador.
+    /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<TicketResponseDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<TicketResponseDto>>> ObtenerTodos(
-        [FromQuery] int? clienteId, [FromQuery] int? tecnicoId, [FromQuery] EstadoTicket? estado, CancellationToken ct)
-        => Ok(await _service.ObtenerTodosAsync(clienteId, tecnicoId, estado, ct));
+    [ProducesResponseType(typeof(ResultadoPaginadoDto<TicketResponseDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ResultadoPaginadoDto<TicketResponseDto>>> ObtenerTodos(
+        [FromQuery] int? clienteId, [FromQuery] int? tecnicoId, [FromQuery] EstadoTicket? estado,
+        [FromQuery] int pagina = 1, [FromQuery] int tamano = 20, CancellationToken ct = default)
+        => Ok(await _service.ObtenerTodosAsync(clienteId, tecnicoId, estado, pagina, tamano, ct));
 
     [HttpGet("{id:int}", Name = "ObtenerTicketPorId")]
     [ProducesResponseType(typeof(TicketResponseDto), StatusCodes.Status200OK)]

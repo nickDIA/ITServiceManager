@@ -25,11 +25,22 @@ public class TicketService : ITicketService
         _tecnicoRepositorio = tecnicoRepositorio;
     }
 
-    public async Task<IReadOnlyList<TicketResponseDto>> ObtenerTodosAsync(
-        int? clienteId, int? tecnicoId, EstadoTicket? estado, CancellationToken ct = default)
+    public async Task<ResultadoPaginadoDto<TicketResponseDto>> ObtenerTodosAsync(
+        int? clienteId, int? tecnicoId, EstadoTicket? estado, int pagina, int tamano, CancellationToken ct = default)
     {
-        var tickets = await _ticketRepositorio.ObtenerTodosConJoinsAsync(clienteId, tecnicoId, estado, ct);
-        return tickets.Select(MapearAResponse).ToList();
+        pagina = Math.Max(1, pagina);
+        tamano = Math.Clamp(tamano, 1, 100);
+
+        var (items, total) = await _ticketRepositorio.ObtenerPaginadoConJoinsAsync(
+            pagina, tamano, clienteId, tecnicoId, estado, ct);
+
+        return new ResultadoPaginadoDto<TicketResponseDto>
+        {
+            Items = items.Select(MapearAResponse).ToList(),
+            Pagina = pagina,
+            TamanoPagina = tamano,
+            TotalRegistros = total
+        };
     }
 
     public async Task<TicketResponseDto?> ObtenerPorIdAsync(int id, CancellationToken ct = default)

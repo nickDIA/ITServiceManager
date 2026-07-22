@@ -77,6 +77,11 @@
   margin-top: 0.5rem;
 }
 
+.columna-mas {
+  width: 100%;
+  margin-top: 0.2rem;
+}
+
 .columna-vacia {
   /* #9aa0b4 daba 2.28:1 sobre el fondo de columna (#eef0f5): fallo AA real detectado con axe.
      #555c72 (mismo gris de .tarjeta-meta) sube a ~5.8:1. */

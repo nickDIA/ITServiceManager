@@ -67,8 +67,8 @@
       <div class="columna">
         <div class="columna-header">
           <span class="badge {{ columna.estado }}">{{ columna.estado }}</span>
-          <!-- Contador derivado: se actualiza solo al mover tickets -->
-          <span class="columna-contador">{{ columna.tickets.length }}</span>
+          <!-- Total REAL del estado (viene del servidor), no solo lo cargado en pantalla -->
+          <span class="columna-contador">{{ columna.total }}</span>
         </div>
 
         @for (ticket of columna.tickets; track ticket.id) {
@@ -107,7 +107,17 @@
             }
           </div>
         } @empty {
-          <p class="columna-vacia">Sin tickets</p>
+          @if (!columna.cargando) {
+            <p class="columna-vacia">Sin tickets</p>
+          }
+        }
+
+        @if (columna.cargando) {
+          <p class="columna-vacia">Cargando…</p>
+        } @else if (columna.hayMas) {
+          <button class="btn mini secundario columna-mas" type="button" (click)="cargarMas(columna)">
+            Cargar más ({{ columna.tickets.length }} de {{ columna.total }})
+          </button>
         }
       </div>
     }

@@ -105,7 +105,11 @@ CORS is enabled (`AddCors`/`UseCors("Frontend")` in `Program.cs`) for `http://lo
 
 `GET /api/clientes` and `GET /api/activos` return `ResultadoPaginadoDto<T>` (`Models/DTOs/ResultadoPaginadoDto.cs`) — `{ items, pagina, tamanoPagina, totalRegistros, hayMas }` — instead of a raw array. `pagina`/`tamano` are optional query params (default `1`/`20`); `ClienteService`/`ActivoService` clamp `tamano` to `[1, 100]` server-side regardless of what the client asks for, so a caller can't force a full-table scan by requesting an absurd page size. `IClienteRepositorio.ObtenerPaginadoAsync` / `IActivoRepositorio.ObtenerPaginadoConClienteAsync` do the `Skip`/`Take`, ordered by `Nombre`.
 
-**Deliberately NOT paginated:** `GET /api/tickets` and the activo/cliente lists that back dropdowns or aggregations. Both `TicketsComponent`'s kanban (`computed` columns grouped by `estado`) and `DashboardComponent`'s `activosPorEstado` (`computed` over the full `activos` signal) derive their view from the *entire* result set — paginating either would silently make the board/chart show a partial, misleading picture instead of failing loudly. The dropdown-populating calls (client selector in Activos/Tickets, activo-of-selected-client selector in Tickets) request a large page (`tamano=200`, or `500` for the dashboard's activos) rather than truly paginating, since a single MSP's client/asset counts don't realistically approach that in the near term — revisit only if that assumption stops holding, not preemptively.
+**`GET /api/tickets` — paginado POR COLUMNA (revisado tras las pruebas de carga).** Originalmente se dejó sin paginar a propósito, porque el kanban agrupaba client-side y una página parcial habría mentido. Las pruebas de carga (ver "Pruebas de rendimiento" abajo) mataron esa decisión con datos: a 200k tickets la respuesta pesaba **85 MB / ~9.6 s**. Ahora el endpoint pagina y acepta `?estado=`, y el kanban hace **una llamada por columna** (`?estado=Abierto&pagina=1&tamano=20`). La clave que lo hace correcto: `ResultadoPaginadoDto.TotalRegistros` es el total **del filtro**, así que cada columna muestra su contador real (40 033) mientras tiene 20 tarjetas en memoria — no hizo falta un endpoint de conteos aparte. Medido: **85 MB → 8.3 KB y ~9600 ms → ~13 ms por columna.** `TicketsComponent.columnas` pasó de ser un `computed` sobre un signal con todos los tickets a un `signal<ColumnaTickets[]>` donde cada columna tiene su página/total/`hayMas`; las mutaciones refrescan **solo las columnas afectadas** (cambiar estado refresca origen y destino) para que los totales sigan viniendo del servidor.
+
+**Dashboard — agrega en SQL, no en el cliente (misma revisión).** `DashboardComponent` cargaba la lista completa de tickets y 500 activos para agrupar client-side. Eso fallaba por dos motivos: los mismos 85 MB, y **corrección** — el tope de 500 hacía que "Activos gestionados" mintiera con 50k activos. Ahora todo sale de `GET /api/reportes/dashboard`, que ya hacía los `GROUP BY` en SQL; los `computed` siguen ahí, pero derivan del agregado. Nota: `ticketsPorPrioridad` del servidor cuenta **todos** los tickets, no solo los abiertos — por eso la tarjeta se rotuló "Tickets por prioridad".
+
+**Sigue sin paginar (a propósito):** las listas de activo/cliente que alimentan dropdowns. Both `TicketsComponent`'s kanban (`computed` columns grouped by `estado`) and `DashboardComponent`'s `activosPorEstado` (`computed` over the full `activos` signal) derive their view from the *entire* result set — paginating either would silently make the board/chart show a partial, misleading picture instead of failing loudly. The dropdown-populating calls (client selector in Activos/Tickets, activo-of-selected-client selector in Tickets) request a large page (`tamano=200`, or `500` for the dashboard's activos) rather than truly paginating, since a single MSP's client/asset counts don't realistically approach that in the near term — revisit only if that assumption stops holding, not preemptively.
 
 ### Alertas de SLA (badge por ticket, kanban)
 
@@ -115,6 +119,29 @@ Everything else is frontend-only, computed from that one number — no new endpo
 - `TicketsComponent.riesgosSla` is a `computed()` — `Map<ticketId, RiesgoSla>` — derived from `tickets()` and `Date.now()` read *once* per recomputation. It replaced an earlier version that called `Date.now()` straight from the template on a plain method: that produced a real `NG0100 ExpressionChangedAfterItHasBeenCheckedError` in dev (two template evaluations of the same expression landed a few ms apart, so the "hours elapsed" value differed between Angular's check and verify passes). Any per-render, non-signal-derived value in a template is at risk of the same bug — compute it once into a signal/computed instead.
 - Only `Abierto`/`EnProgreso` tickets are eligible (a closed ticket isn't "at risk" anymore); `>= 100%` of `SlaHoras` elapsed → `incumplido` (red badge), `>= 80%` → `riesgo` (amber badge), otherwise no badge at all — showing a badge only when there's something to act on, not a permanent "en tiempo" state on every card.
 - Deliberately **not** on the Dashboard (see the pagination note above for the reasoning behind picking one surface over the other for this kind of alert): it's a technician-facing, per-ticket signal, not a manager-facing aggregate.
+
+### Pruebas de rendimiento (datos de carga)
+
+`Data/CargaSeeder.cs` genera VOLUMEN para medir de verdad — separado de `DbSeeder` (data demo). Es un comando de mantenimiento gateado, nunca corre al arrancar el host:
+
+```
+dotnet run --project backend/Nucleo.Api -- seed-bulk realista   # 50 clientes · 800 activos · 3k tickets
+dotnet run --project backend/Nucleo.Api -- seed-bulk estres     # 1k clientes · 50k activos · 200k tickets
+```
+
+Es **idempotente por "top-up"**: lleva cada tabla al objetivo del nivel, así que re-ejecutar no duplica y subir de nivel solo agrega la diferencia. Los datos de carga llevan prefijos propios (`LC…` en RFC, `SN-LC-…` en serie, `carga…@carga.test`) para no chocar con el demo y poder identificarlos. Técnica de EF a escala que aplica: `AutoDetectChangesEnabled = false` + insertar en lotes con `ChangeTracker.Clear()` entre lotes — sin eso el change tracker crece y las inserciones se degradan a O(n²) (200k tickets en 65s con esto).
+
+**Qué encontró la medición a 200k tickets / 50k activos, y qué se arregló:**
+
+| Hallazgo | Causa | Fix | Resultado |
+|---|---|---|---|
+| `/tickets` 4.6–9.6 s, **85 MB** | traía TODO el conjunto | paginar por columna (arriba) | **~13 ms · 8.3 KB** |
+| dashboard 1592 ms | `GROUP BY Estado/Prioridad` = scans de tabla completa | índices | **295 ms** |
+| `/activos` paginado 147 ms | `ORDER BY Nombre` sin índice ordenaba las 50k filas en cada página | índice en `Nombre` | **13 ms** |
+
+**La lección central del ejercicio:** los índices arreglan el costo del *plan de consulta*; **no** arreglan una decisión de traer todo el conjunto. Por eso los índices no movieron ni un poco a `/tickets` (su costo era materializar+serializar 200k filas) y solo la paginación lo resolvió. Son dos problemas distintos con dos fixes distintos.
+
+Índices añadidos (migraciones `IndicesRendimiento` + `IndiceTicketEstadoFecha`): `Ticket(Estado, FechaCreacion)` compuesto — sirve el kanban paginado (`WHERE Estado ORDER BY FechaCreacion DESC` → seek + top-N) **y** el `GROUP BY Estado` (columna líder); `Ticket.Prioridad`; `Activo.Estado`; `Activo.Nombre`; `Cliente.Nombre`. Las FK ya las indexa EF sola — lo que faltaba eran las columnas de filtro/orden.
 
 ### Integración continua (GitHub Actions)
 

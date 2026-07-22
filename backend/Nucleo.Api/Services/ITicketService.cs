@@ -5,8 +5,13 @@ namespace Nucleo.Api.Services;
 
 public interface ITicketService
 {
-    Task<IReadOnlyList<TicketResponseDto>> ObtenerTodosAsync(
-        int? clienteId, int? tecnicoId, EstadoTicket? estado, CancellationToken ct = default);
+    /// <summary>
+    /// Página de tickets (tamano acotado a [1,100]) con los filtros opcionales.
+    /// TotalRegistros es el total del filtro, no de la página: el kanban lo usa como
+    /// contador por columna sin traerse todos los tickets.
+    /// </summary>
+    Task<ResultadoPaginadoDto<TicketResponseDto>> ObtenerTodosAsync(
+        int? clienteId, int? tecnicoId, EstadoTicket? estado, int pagina, int tamano, CancellationToken ct = default);
 
     Task<TicketResponseDto?> ObtenerPorIdAsync(int id, CancellationToken ct = default);
 

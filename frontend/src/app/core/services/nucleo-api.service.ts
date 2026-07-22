@@ -60,8 +60,17 @@ export class NucleoApiService {
   }
 
   // ------------------------------------------------ Tickets
-  obtenerTickets(): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(`${this.api}/tickets`);
+  /**
+   * Página de tickets de UN estado: el kanban hace una llamada por columna.
+   * `totalRegistros` de la respuesta es el total de esa columna (no de la página),
+   * así el contador es correcto sin traerse todos los tickets.
+   */
+  obtenerTickets(estado: EstadoTicket, pagina: number, tamano: number): Observable<ResultadoPaginado<Ticket>> {
+    const params = new HttpParams()
+      .set('estado', estado)
+      .set('pagina', pagina)
+      .set('tamano', tamano);
+    return this.http.get<ResultadoPaginado<Ticket>>(`${this.api}/tickets`, { params });
   }
 
   crearTicket(dto: CrearTicket): Observable<Ticket> {

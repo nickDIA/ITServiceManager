@@ -10,26 +10,34 @@ public class TicketRepositorio : Repositorio<Ticket>, ITicketRepositorio
     {
     }
 
-    public async Task<IReadOnlyList<Ticket>> ObtenerTodosConJoinsAsync(
-        int? clienteId, int? tecnicoId, EstadoTicket? estado, CancellationToken ct = default)
+    public async Task<(IReadOnlyList<Ticket> Items, int Total)> ObtenerPaginadoConJoinsAsync(
+        int pagina, int tamano, int? clienteId, int? tecnicoId, EstadoTicket? estado, CancellationToken ct = default)
     {
-        var query = _dbSet
+        // El filtro se aplica sobre la query base (sin los Include) para que el COUNT no
+        // arrastre los JOINs: contar no necesita traer cliente/activo/técnico.
+        var filtrada = _dbSet.AsNoTracking().AsQueryable();
+
+        if (clienteId is not null)
+            filtrada = filtrada.Where(t => t.ClienteId == clienteId);
+
+        if (tecnicoId is not null)
+            filtrada = filtrada.Where(t => t.TecnicoId == tecnicoId);
+
+        if (estado is not null)
+            filtrada = filtrada.Where(t => t.Estado == estado);
+
+        var total = await filtrada.CountAsync(ct);
+
+        var items = await filtrada
             .Include(t => t.Cliente).ThenInclude(c => c.Contratos)
             .Include(t => t.Activo)
             .Include(t => t.Tecnico)
-            .AsNoTracking()
-            .AsQueryable();
+            .OrderByDescending(t => t.FechaCreacion)
+            .Skip((pagina - 1) * tamano)
+            .Take(tamano)
+            .ToListAsync(ct);
 
-        if (clienteId is not null)
-            query = query.Where(t => t.ClienteId == clienteId);
-
-        if (tecnicoId is not null)
-            query = query.Where(t => t.TecnicoId == tecnicoId);
-
-        if (estado is not null)
-            query = query.Where(t => t.Estado == estado);
-
-        return await query.OrderByDescending(t => t.FechaCreacion).ToListAsync(ct);
+        return (items, total);
     }
 
     public async Task<Ticket?> ObtenerPorIdConJoinsAsync(int id, CancellationToken ct = default)

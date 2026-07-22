@@ -45,14 +45,15 @@
     </div>
 
     <div class="panel">
-      <h2>Abiertos por prioridad</h2>
+      <!-- El agregado del servidor cuenta TODOS los tickets por prioridad, no solo los abiertos. -->
+      <h2>Tickets por prioridad</h2>
       @for (grupo of ticketsPorPrioridad(); track grupo.nombre) {
         <div class="fila-dist">
           <span class="badge {{ grupo.nombre }}">{{ grupo.nombre }}</span>
           <span class="cantidad">{{ grupo.cantidad }}</span>
         </div>
       } @empty {
-        <p class="vacio">Sin tickets abiertos.</p>
+        <p class="vacio">Sin tickets.</p>
       }
     </div>
 

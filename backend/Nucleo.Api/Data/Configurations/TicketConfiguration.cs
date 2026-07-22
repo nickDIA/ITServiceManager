@@ -17,10 +17,14 @@ public class TicketConfiguration : IEntityTypeConfiguration<Ticket>
         builder.Property(t => t.Estado).HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(t => t.FechaCreacion).IsRequired();
 
-        // Índices de rendimiento (medidos con datos de carga): el dashboard hace
-        // GROUP BY Estado y GROUP BY Prioridad sobre TODOS los tickets; sin estos índices
-        // cada agregación es un scan de tabla completa (~200k filas).
-        builder.HasIndex(t => t.Estado);
+        // Índices de rendimiento (medidos con datos de carga).
+        //  - (Estado, FechaCreacion): sirve DOS patrones con un solo índice.
+        //      a) el kanban paginado por columna: WHERE Estado = X ORDER BY FechaCreacion DESC
+        //         -> seek + top-N, sin ordenar las ~40k filas del estado.
+        //      b) el GROUP BY Estado del dashboard (Estado es la columna líder).
+        //  - Prioridad: el GROUP BY Prioridad del dashboard.
+        // Sin ellos, cada agregación era un scan de tabla completa (~200k filas).
+        builder.HasIndex(t => new { t.Estado, t.FechaCreacion });
         builder.HasIndex(t => t.Prioridad);
 
         // Ticket (N) -> Activo (0..1). Opcional: ActivoId es nullable.
