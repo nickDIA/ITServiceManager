@@ -23,6 +23,12 @@ public class ActivoConfiguration : IEntityTypeConfiguration<Activo>
 
         builder.HasIndex(a => a.NumeroSerie).IsUnique();
 
+        // Índices de rendimiento (medidos con datos de carga):
+        //  - Estado: el dashboard hace GROUP BY Estado (scan de tabla completa sin esto).
+        //  - Nombre: la paginación ordena por Nombre; sin índice, ordena TODA la tabla por página.
+        builder.HasIndex(a => a.Estado);
+        builder.HasIndex(a => a.Nombre);
+
         // 1 Activo -> N HistorialActivo.
         // Cascade: si se elimina el activo, su historial de auditoría se va con él.
         // Es la ÚNICA ruta de borrado en cascada hacia HistorialActivos (ver nota en HistorialActivoConfiguration).

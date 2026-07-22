@@ -20,6 +20,10 @@ public class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
         // RFC único en todo el sistema.
         builder.HasIndex(c => c.Rfc).IsUnique();
 
+        // La paginación de clientes ordena por Nombre: índice para que el ORDER BY sea un
+        // seek y no un sort de toda la tabla (mismo patrón que Activo.Nombre).
+        builder.HasIndex(c => c.Nombre);
+
         // 1 Cliente -> N Activos.
         // Restrict: no se puede borrar un cliente que aún tiene activos (lo validamos en el service).
         builder.HasMany(c => c.Activos)

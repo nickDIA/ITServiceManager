@@ -17,6 +17,12 @@ public class TicketConfiguration : IEntityTypeConfiguration<Ticket>
         builder.Property(t => t.Estado).HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(t => t.FechaCreacion).IsRequired();
 
+        // Índices de rendimiento (medidos con datos de carga): el dashboard hace
+        // GROUP BY Estado y GROUP BY Prioridad sobre TODOS los tickets; sin estos índices
+        // cada agregación es un scan de tabla completa (~200k filas).
+        builder.HasIndex(t => t.Estado);
+        builder.HasIndex(t => t.Prioridad);
+
         // Ticket (N) -> Activo (0..1). Opcional: ActivoId es nullable.
         // SetNull: si se elimina el activo, el ticket queda sin activo en vez de bloquear o borrarse.
         builder.HasOne(t => t.Activo)

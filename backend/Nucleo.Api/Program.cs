@@ -120,6 +120,22 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// ----------------------------------------------------------------------------
+// Comando de mantenimiento (solo dev, local): carga datos de VOLUMEN para pruebas
+// de rendimiento y TERMINA, sin arrancar el host web.
+//   dotnet run --project backend/Nucleo.Api -- seed-bulk realista
+//   dotnet run --project backend/Nucleo.Api -- seed-bulk estres
+// Nunca se ejecuta en un arranque normal (requiere el argumento explícito).
+// ----------------------------------------------------------------------------
+if (args.Length > 0 && args[0] == "seed-bulk")
+{
+    using var seedScope = app.Services.CreateScope();
+    var seedDb = seedScope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await seedDb.Database.MigrateAsync();
+    await CargaSeeder.SeedAsync(seedDb, args.Length > 1 ? args[1] : "realista");
+    return;
+}
+
 // El manejador de excepciones va primero para envolver todo el pipeline.
 app.UseExceptionHandler();
 
