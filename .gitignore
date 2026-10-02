@@ -1,2 +1,18 @@
 # Salida generada por repomix (regenerable con `npx repomix`, no se versiona).
 repomix-output.*
+
+# --- .NET: salida de compilacion (se regenera con `dotnet build`) ---
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio / Rider: estado local del IDE
+.vs/
+.idea/
+*.user
+*.suo
+
+# Resultados de pruebas
+[Tt]est[Rr]esult*/
+*.trx
+coverage*.json
+coverage*.xml
