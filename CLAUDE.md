@@ -26,6 +26,8 @@ Backend at `backend/Nucleo.Api` (ASP.NET Core, net10.0, EF Core + SQL Server Exp
 | `frontend/src/app/features/CLAUDE.md` | qué patrón Angular vive en qué feature (a propósito) |
 | `frontend/src/app/features/tickets/CLAUDE.md` | kanban paginado por columna, alertas de SLA |
 
+**Skills del proyecto** (`.claude/skills/`): `/nueva-migracion <Nombre>` (revisar modelo → generar → revisar el `.cs` → aplicar y verificar con `sqlcmd`) y `/validar-fase <cambio>` (API con los 3 roles + navegador real + axe/overflow → registro en `docs/TESTING.md`). Úsalas en vez de improvisar esos flujos.
+
 ## Commands
 
 Run from repo root (`Nucleo.slnx` is the solution file, in the new .slnx XML format).
@@ -44,7 +46,7 @@ npm start --prefix frontend
 # or: cd frontend && npm start   (wraps `ng serve`)
 ```
 
-Both must run simultaneously for the frontend to work; a `.claude/launch.json` entry named `frontend` exists for the Browser-pane tooling. On startup in `Development`, `Program.cs` automatically runs `Database.MigrateAsync()` and `DbSeeder.SeedAsync()` — no manual migration step needed for local dev after pulling changes.
+Both must run simultaneously for the frontend to work; `.claude/launch.json` has `api` and `frontend` entries for the Browser-pane tooling (`preview_start {name: "api"}` / `{name: "frontend"}`) — use those instead of starting servers from a shell. On startup in `Development`, `Program.cs` automatically runs `Database.MigrateAsync()` and `DbSeeder.SeedAsync()` — no manual migration step needed for local dev after pulling changes.
 
 Migrations (requires the `dotnet-ef` global tool: `dotnet tool install --global dotnet-ef`):
 ```
