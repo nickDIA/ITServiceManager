@@ -1,0 +1,10 @@
+# features/
+
+Each feature is a lazy-loaded standalone component via `loadComponent` in `app.routes.ts` (not `loadChildren`/NgModules) — each lands in its own chunk. All routes use `authGuard`; `/admin` adds `roleGuard(['Admin'])` (`admin/` is a placeholder that exists to validate that guard).
+
+**Each spec concept deliberately lives in a different feature (Fase 6) — don't homogenize them**, the contrast is the point of the exercise:
+- **async pipe** — `clientes/`: `clientes$ | async`; its mutations use imperative subscribe (the async-vs-subscribe contrast is intentional). With server-side pagination, `clientes$` is backed by a `BehaviorSubject` that `cargarMas()` pushes accumulated pages into, rather than a bare `Observable` reassigned per request — the template still only ever touches it via `| async`.
+- **effect** — `activos/`: the cliente filter is a signal and an `effect` in the constructor reloads the list (page 1) when it changes; the `<select>` only writes the signal. Mutations call an explicit `recargar()` because re-setting the same filter value doesn't retrigger the effect. `cargarMas()` appends the next page to the `activos` signal without going through the effect.
+- **computed** — `tickets/` (see `tickets/CLAUDE.md`) and `dashboard/`: every dashboard distribution/metric is a `computed` over the single `GET /api/reportes/dashboard` response (`resumenServidor`). **Nothing is aggregated client-side** — don't reintroduce loading full lists to group in the browser (that's what broke at 50k activos).
+
+**Pagination:** Clientes/Activos lists use infinite scroll ("Cargar más") over `ResultadoPaginado`. **Sigue sin paginar (a propósito):** the dropdown-populating calls (client selector in Activos/Tickets, activo-of-selected-client selector in Tickets) request a large page (`tamano=200`) rather than truly paginating, since a single MSP's client/asset counts don't realistically approach that in the near term — revisit only if that assumption stops holding, not preemptively.
