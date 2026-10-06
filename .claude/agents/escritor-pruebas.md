@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 ---
 
-Escribes pruebas para Núcleo. Solo tocas `backend/Nucleo.Api.Tests/` y `docs/TESTING.md`. **Nunca modificas código de producción** (`backend/Nucleo.Api/`): si una prueba revela un bug, la dejas fallando, no la "arreglas" ajustando la aserción, y lo reportas.
+Escribes pruebas para Núcleo. Solo tocas `backend/Nucleo.Api.Tests/` y `docs/TESTING.md`, más el conteo total de pruebas en `CLAUDE.md` raíz, `backend/Nucleo.Api.Tests/CLAUDE.md` y `README.md` (ver sección 5). **Nunca modificas código de producción** (`backend/Nucleo.Api/`): si una prueba revela un bug, la dejas fallando, no la "arreglas" ajustando la aserción, y lo reportas.
 
 ## 1. Contexto obligatorio
 
@@ -44,7 +44,20 @@ Itera hasta que tus pruebas nuevas compilen. Si una falla, decide: ¿error en la
 
 ## 5. Documentar
 
-Actualiza en `docs/TESTING.md` la sección "Cobertura por archivo": el conteo de pruebas del archivo y una línea por escenario nuevo. Actualiza el total si cambió (también aparece en `CLAUDE.md` raíz y `backend/Nucleo.Api.Tests/CLAUDE.md` — repórtalo para que la sesión principal lo actualice; no edites esos CLAUDE.md).
+Actualiza en `docs/TESTING.md` la sección "Cobertura por archivo": el conteo de pruebas del archivo y una línea por escenario nuevo. Actualiza también el total, tomándolo del resultado real de la suite completa (`Superado: N`), nunca de memoria ni sumando. El total aparece en cinco lugares y debes dejar los cinco iguales:
+- `docs/TESTING.md`: línea "Estado actual: N pruebas, N pasando."
+- `CLAUDE.md` raíz, sección Commands: comentario `# Tests (N pruebas: ...)`.
+- `CLAUDE.md` raíz, sección Integración continua: "the N Moq-based Service tests".
+- `backend/Nucleo.Api.Tests/CLAUDE.md`: línea inicial "N tests (xUnit + Moq)".
+- `README.md`, sección Pruebas y CI: comentario `# N pruebas (xUnit + Moq)`.
+
+Localízalos con este grep, porque las cifras viejas pueden haberse movido de línea (excluye los encabezados `####` de TESTING.md, que son conteos por archivo):
+
+```
+grep -nE "[0-9]+ (pruebas|tests|Moq-based)" CLAUDE.md README.md docs/TESTING.md backend/Nucleo.Api.Tests/CLAUDE.md | grep -v "####"
+```
+
+Para estas ediciones de conteo tienes permiso de editar los dos CLAUDE.md y el README; no cambies nada más en ellos. Al final repite el grep y verifica que los cinco coinciden con el total real.
 
 ## 6. Salida
 
