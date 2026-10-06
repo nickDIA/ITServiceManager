@@ -72,6 +72,27 @@ public class ClienteServiceTests
         _repo.Verify(r => r.ObtenerPaginadoAsync(esperada, 100, It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    [Theory]
+    [InlineData(100)]
+    [InlineData(1)]
+    public async Task ObtenerTodosAsync_PaginaMaxValue_ElRepositorioRecibeUnaPaginaCuyoOffsetNoDesborde(int tamano)
+    {
+        int paginaRecibida = 0, tamanoRecibido = 0;
+        _repo.Setup(r => r.ObtenerPaginadoAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+             .Callback<int, int, CancellationToken>((p, t, _) =>
+             {
+                 paginaRecibida = p;
+                 tamanoRecibido = t;
+             })
+             .ReturnsAsync(((IReadOnlyList<Cliente>)[], 0));
+
+        await _service.ObtenerTodosAsync(int.MaxValue, tamano);
+
+        Assert.Equal(tamano, tamanoRecibido);
+        Assert.Equal(int.MaxValue / tamano, paginaRecibida);
+        Assert.True((long)(paginaRecibida - 1) * tamanoRecibido <= int.MaxValue);
+    }
+
     [Fact]
     public async Task ObtenerPorIdAsync_Inexistente_DevuelveNull()
     {

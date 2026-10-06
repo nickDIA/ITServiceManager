@@ -174,6 +174,28 @@ public class TicketServiceTests
             esperada, 100, null, null, null, It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    [Theory]
+    [InlineData(100)]
+    [InlineData(1)]
+    public async Task ObtenerTodosAsync_PaginaMaxValue_ElRepositorioRecibeUnaPaginaCuyoOffsetNoDesborde(int tamano)
+    {
+        int paginaRecibida = 0, tamanoRecibido = 0;
+        _ticketRepo.Setup(r => r.ObtenerPaginadoConJoinsAsync(
+                        It.IsAny<int>(), It.IsAny<int>(), null, null, null, It.IsAny<CancellationToken>()))
+                   .Callback<int, int, int?, int?, EstadoTicket?, CancellationToken>((p, t, _, _, _, _) =>
+                   {
+                       paginaRecibida = p;
+                       tamanoRecibido = t;
+                   })
+                   .ReturnsAsync(((IReadOnlyList<Ticket>)[], 0));
+
+        await _service.ObtenerTodosAsync(null, null, null, pagina: int.MaxValue, tamano: tamano);
+
+        Assert.Equal(tamano, tamanoRecibido);
+        Assert.Equal(int.MaxValue / tamano, paginaRecibida);
+        Assert.True((long)(paginaRecibida - 1) * tamanoRecibido <= int.MaxValue);
+    }
+
     // ------------------------------------------------------------ SLA (alertas)
 
     [Fact]

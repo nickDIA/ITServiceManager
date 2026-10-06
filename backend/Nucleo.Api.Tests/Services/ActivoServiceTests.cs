@@ -85,6 +85,28 @@ public class ActivoServiceTests
         _activoRepo.Verify(r => r.ObtenerPaginadoConClienteAsync(esperada, 100, null, It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    [Theory]
+    [InlineData(100)]
+    [InlineData(1)]
+    public async Task ObtenerTodosAsync_PaginaMaxValue_ElRepositorioRecibeUnaPaginaCuyoOffsetNoDesborde(int tamano)
+    {
+        int paginaRecibida = 0, tamanoRecibido = 0;
+        _activoRepo.Setup(r => r.ObtenerPaginadoConClienteAsync(
+                        It.IsAny<int>(), It.IsAny<int>(), null, It.IsAny<CancellationToken>()))
+                   .Callback<int, int, int?, CancellationToken>((p, t, _, _) =>
+                   {
+                       paginaRecibida = p;
+                       tamanoRecibido = t;
+                   })
+                   .ReturnsAsync(((IReadOnlyList<Activo>)[], 0));
+
+        await _service.ObtenerTodosAsync(clienteId: null, pagina: int.MaxValue, tamano: tamano);
+
+        Assert.Equal(tamano, tamanoRecibido);
+        Assert.Equal(int.MaxValue / tamano, paginaRecibida);
+        Assert.True((long)(paginaRecibida - 1) * tamanoRecibido <= int.MaxValue);
+    }
+
     // ------------------------------------------------------------ Crear
 
     [Fact]

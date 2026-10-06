@@ -18,7 +18,7 @@ dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
 > ⚠️ Si la API está corriendo (`dotnet run`), detenla primero: el proceso bloquea
 > `Nucleo.Api.exe` y el build de los tests falla con MSB3027.
 
-**Estado actual: 85 pruebas, 85 pasando.**
+**Estado actual: 91 pruebas, 91 pasando.**
 
 ### Qué se prueba y qué no (diseño de la suite)
 
@@ -42,7 +42,7 @@ dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
 | `EstadoActivoTransiciones` | Transiciones permitidas entre Operativo/EnReparacion/EnAlmacen; `Retirado` es terminal (0 salidas); mismo estado no es transición válida. |
 | `EstadoTicketTransiciones` | Flujo normal `Abierto→EnProgreso→Resuelto→Cerrado`; escape `Abierto→Cancelado`; no saltar pasos; no reabrir; `Cerrado`/`Cancelado` terminales. |
 
-#### `Services/ClienteServiceTests.cs` (11 pruebas)
+#### `Services/ClienteServiceTests.cs` (13 pruebas)
 
 | Caso | Regla verificada |
 |---|---|
@@ -54,8 +54,9 @@ dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
 | Eliminar sin activos | `Eliminar` + `GuardarCambiosAsync` exactamente una vez |
 | Lecturas | Mapeo entidad→DTO; inexistente devuelve `null` (el controller lo traduce a 404) |
 | Listar paginado: tope superior | `pagina = int.MaxValue`, `tamano = 100` → el repo recibe `int.MaxValue / 100` y `Pagina` lo refleja (evita desborde del offset) |
+| Listar paginado: invariante de overflow (2 casos) | `pagina = int.MaxValue` con `tamano` 100 y 1 → el repo recibe `int.MaxValue / tamano` y `(long)(pagina-1)*tamano <= int.MaxValue` |
 
-#### `Services/ActivoServiceTests.cs` (15 pruebas) — **el corazón del proyecto**
+#### `Services/ActivoServiceTests.cs` (17 pruebas) — **el corazón del proyecto**
 
 | Caso | Regla verificada |
 |---|---|
@@ -68,8 +69,9 @@ dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
 | `DbUpdateException` que **no** es FK 547 | **No** se traduce a 404: va al catch genérico (rollback + rethrow) — verifica que el filtro `when` discrimina bien |
 | Historial | 404 si el activo no existe; mapeo incluye `TecnicoNombre` del join |
 | Listar paginado: tope superior | Igual que Cliente: `pagina = int.MaxValue` → `int.MaxValue / 100` en repo y respuesta |
+| Listar paginado: invariante de overflow (2 casos) | Igual que Cliente: `tamano` 100 y 1, offset `(pagina-1)*tamano` cabe en int |
 
-#### `Services/TicketServiceTests.cs` (32 pruebas)
+#### `Services/TicketServiceTests.cs` (34 pruebas)
 
 | Caso | Regla verificada |
 |---|---|
@@ -80,6 +82,7 @@ dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
 | Listar paginado: clamp de `tamano` (6 casos) | 0, -5 → 1; 100 → 100; 101, 5000 → 100; `TamanoPagina` de la respuesta acotado |
 | Listar paginado: `pagina` 0/negativa (3 casos) | Se sube a 1 (incluye `int.MinValue`) |
 | Listar paginado: tope superior | `pagina = int.MaxValue`, `tamano = 100` → `int.MaxValue / 100` en repo y respuesta |
+| Listar paginado: invariante de overflow (2 casos) | `tamano` 100 y 1: el repo recibe `int.MaxValue / tamano` y el offset `(pagina-1)*tamano` cabe en int |
 | Crear: cliente/técnico/activo inexistentes | 404 en cada caso |
 | Crear con activo de **otro** cliente | `ConflictoException` — la regla de negocio cruzada distintiva de Ticket |
 | Crear válido | Nace `Abierto`, `FechaCreacion` asignada, `FechaCierre` null |

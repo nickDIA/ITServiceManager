@@ -1,6 +1,6 @@
 # Nucleo.Api.Tests
 
-85 tests (xUnit + Moq): `Services/` covers the Service layer with **mocked repositories — no DB, no host, no `Jwt:Key`**; `Domain/` covers the state-transition tables. That's why CI can run them without SQL Server.
+91 tests (xUnit + Moq): `Services/` covers the Service layer with **mocked repositories — no DB, no host, no `Jwt:Key`**; `Domain/` covers the state-transition tables. That's why CI can run them without SQL Server.
 
 ```
 dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj

@@ -61,7 +61,7 @@ dotnet ef database update --project backend/Nucleo.Api/Nucleo.Api.csproj --start
 ```
 
 ```
-# Tests (85 pruebas: Services con Moq + máquinas de estados) — la API NO debe estar corriendo (bloquea el .exe)
+# Tests (91 pruebas: Services con Moq + máquinas de estados) — la API NO debe estar corriendo (bloquea el .exe)
 dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
 
 # Una sola clase / prueba
@@ -82,7 +82,7 @@ dotnet run --project backend/Nucleo.Api -- seed-bulk estres     # 1k clientes ·
 ## Integración continua (GitHub Actions)
 
 Two workflows under `.github/workflows/`, both on push/PR to `main`:
-- **`ci.yml`** — the general build+test gate, two parallel jobs. **backend**: `dotnet restore/build Nucleo.slnx` (Release) + `dotnet test` on the `Nucleo.Api.Tests` project (the 85 Moq-based Service tests — no SQL Server, no `Jwt:Key` secret needed, since those are only required to *start the web host*, not to build/test the assemblies). **frontend**: `npm ci` + `npm run build` + `npm test` headless (`--watch=false --browsers=ChromeHeadless`; ubuntu-latest ships Chrome). Both jobs validated locally with the exact CI commands before landing.
+- **`ci.yml`** — the general build+test gate, two parallel jobs. **backend**: `dotnet restore/build Nucleo.slnx` (Release) + `dotnet test` on the `Nucleo.Api.Tests` project (the 91 Moq-based Service tests — no SQL Server, no `Jwt:Key` secret needed, since those are only required to *start the web host*, not to build/test the assemblies). **frontend**: `npm ci` + `npm run build` + `npm test` headless (`--watch=false --browsers=ChromeHeadless`; ubuntu-latest ships Chrome). Both jobs validated locally with the exact CI commands before landing.
 - **`lighthouse.yml`** — the frontend performance/a11y gate (see `frontend/CLAUDE.md`). Path-filtered to `frontend/**` so it only runs when the frontend changes.
 
 `dotnet-version: "10.0.x"` in setup-dotnet because the project targets **net10.0** — GitHub runners don't ship it preinstalled, so the SDK is installed per-run. Restore/build/test use the **`.slnx`** solution directly (SDK 10 supports the new XML solution format natively).
