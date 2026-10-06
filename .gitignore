@@ -16,3 +16,6 @@ repomix-output.*
 *.trx
 coverage*.json
 coverage*.xml
+
+# Grafo de conocimiento de graphify (regenerable con `graphify update .`, no se versiona).
+graphify-out/
