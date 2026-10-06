@@ -33,6 +33,7 @@ public class TicketRepositorio : Repositorio<Ticket>, ITicketRepositorio
             .Include(t => t.Activo)
             .Include(t => t.Tecnico)
             .OrderByDescending(t => t.FechaCreacion)
+            .ThenByDescending(t => t.Id)   // desempate: FechaCreacion no es única, sin esto "Cargar más" repite u omite tarjetas
             .Skip((pagina - 1) * tamano)
             .Take(tamano)
             .ToListAsync(ct);

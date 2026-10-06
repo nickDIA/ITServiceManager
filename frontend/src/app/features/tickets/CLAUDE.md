@@ -6,8 +6,6 @@ The board makes **one API call per column** (`GET /api/tickets?estado=Abierto&pa
 
 Mutations refresh **only the affected columns** (a state change refreshes origin and destination) so totals keep coming from the server. Don't "optimistically" move a card between columns and recompute counters locally — the local count would be the count of loaded cards, not the real total.
 
-Note: the doc comment at the top of `tickets.component.ts` still describes the old "all columns are `computed` from one `tickets` signal" design — trust the code, not that comment.
-
 ## Alertas de SLA (badge por ticket)
 
 The only server input is `TicketResponseDto.SlaHoras` (strictest active contract's SLA; see `backend/Nucleo.Api/Services/CLAUDE.md`). Everything else is computed here — no new endpoint, no background job:

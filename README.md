@@ -134,7 +134,7 @@ Es idempotente: volver a ejecutarlo solo completa lo que falte para llegar al ni
 ## Pruebas y CI
 
 ```bash
-dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj          # 66 pruebas (xUnit + Moq)
+dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj          # 85 pruebas (xUnit + Moq)
 npm test --prefix frontend -- --watch=false --browsers=ChromeHeadless
 ```
 

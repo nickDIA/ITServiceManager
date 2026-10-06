@@ -72,6 +72,19 @@ public class ActivoServiceTests
         _activoRepo.Verify(r => r.ObtenerPaginadoConClienteAsync(1, 100, null, It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    [Fact]
+    public async Task ObtenerTodosAsync_PaginaEnorme_SeAcotaParaQueElOffsetNoDesborde()
+    {
+        const int esperada = int.MaxValue / 100;
+        _activoRepo.Setup(r => r.ObtenerPaginadoConClienteAsync(esperada, 100, null, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync(((IReadOnlyList<Activo>)[], 0));
+
+        var resultado = await _service.ObtenerTodosAsync(clienteId: null, pagina: int.MaxValue, tamano: 100);
+
+        Assert.Equal(esperada, resultado.Pagina);
+        _activoRepo.Verify(r => r.ObtenerPaginadoConClienteAsync(esperada, 100, null, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
     // ------------------------------------------------------------ Crear
 
     [Fact]

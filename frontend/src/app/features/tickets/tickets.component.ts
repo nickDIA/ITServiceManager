@@ -30,10 +30,11 @@ export interface ColumnaTickets {
 }
 
 /**
- * Tablero de tickets agrupado por estado. Las columnas y sus contadores son COMPUTED
- * derivados del signal `tickets`: al cambiar el estado de un ticket solo se actualiza
- * ese signal, y columnas/contadores se recalculan solos — la validación central de la
- * Fase 6 ("los contadores se actualizan solos al cambiar datos").
+ * Tablero de tickets agrupado por estado, paginado POR COLUMNA: cada columna pide al
+ * servidor su propia página (`?estado=X`) y su contador es el `totalRegistros` del filtro,
+ * no el número de tarjetas cargadas. `columnas` es un signal; `totalAbiertos` y
+ * `riesgosSla` son COMPUTED sobre él. Las mutaciones refrescan solo las columnas
+ * afectadas (origen y destino) para que los totales sigan viniendo del servidor.
  */
 @Component({
   selector: 'app-tickets',

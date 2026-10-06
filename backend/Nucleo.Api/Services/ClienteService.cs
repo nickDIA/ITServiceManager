@@ -20,8 +20,9 @@ public class ClienteService : IClienteService
 
     public async Task<ResultadoPaginadoDto<ClienteResponseDto>> ObtenerTodosAsync(int pagina, int tamano, CancellationToken ct = default)
     {
-        pagina = Math.Max(1, pagina);
         tamano = Math.Clamp(tamano, 1, 100);
+        // Tope superior: (pagina - 1) * tamano se calcula en int y desbordaría con una página enorme.
+        pagina = Math.Clamp(pagina, 1, int.MaxValue / tamano);
 
         var (items, total) = await _repositorio.ObtenerPaginadoAsync(pagina, tamano, ct);
 

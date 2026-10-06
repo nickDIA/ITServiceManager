@@ -38,6 +38,142 @@ public class TicketServiceTests
         Tecnico = new Tecnico { Id = 4, Nombre = "Carlos Méndez" }
     };
 
+    // ------------------------------------------------------------ Listar (paginado)
+
+    [Fact]
+    public async Task ObtenerTodosAsync_MapeaYArmaLaEnvolturaConElTotalDelFiltro()
+    {
+        // Página 1 de 2 items, pero el filtro (estado Abierto) tiene 5 en total.
+        IReadOnlyList<Ticket> items = [TicketDemo(1), TicketDemo(2)];
+        _ticketRepo.Setup(r => r.ObtenerPaginadoConJoinsAsync(
+                        1, 2, 1, 4, EstadoTicket.Abierto, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync((items, 5));
+
+        var resultado = await _service.ObtenerTodosAsync(
+            clienteId: 1, tecnicoId: 4, estado: EstadoTicket.Abierto, pagina: 1, tamano: 2);
+
+        Assert.Equal([1, 2], resultado.Items.Select(i => i.Id));
+        Assert.All(resultado.Items, i =>
+        {
+            Assert.Equal("Cliente Demo", i.ClienteNombre);
+            Assert.Equal("Carlos Méndez", i.TecnicoNombre);
+        });
+        Assert.Equal(1, resultado.Pagina);
+        Assert.Equal(2, resultado.TamanoPagina);
+        Assert.Equal(5, resultado.TotalRegistros);
+        Assert.True(resultado.HayMas);
+        _ticketRepo.Verify(r => r.ObtenerPaginadoConJoinsAsync(
+            1, 2, 1, 4, EstadoTicket.Abierto, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ObtenerTodosAsync_MapeaActivoSlaYFechaCierre()
+    {
+        var conActivo = TicketDemo(1, EstadoTicket.Cerrado);
+        conActivo.ActivoId = 9;
+        conActivo.Activo = new Activo { Id = 9, ClienteId = 1, Nombre = "Servidor Dell" };
+        conActivo.FechaCierre = new DateTime(2024, 5, 1);
+        conActivo.Cliente!.Contratos = [new Contrato { Id = 1, ClienteId = 1, Activo = true, SlaHoras = 6 }];
+        var sinActivo = TicketDemo(2);
+        IReadOnlyList<Ticket> items = [conActivo, sinActivo];
+        _ticketRepo.Setup(r => r.ObtenerPaginadoConJoinsAsync(
+                        1, 20, null, null, null, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync((items, 2));
+
+        var resultado = await _service.ObtenerTodosAsync(null, null, null, pagina: 1, tamano: 20);
+
+        Assert.Equal("Servidor Dell", resultado.Items[0].ActivoNombre);
+        Assert.Equal(6, resultado.Items[0].SlaHoras);
+        Assert.Equal(new DateTime(2024, 5, 1), resultado.Items[0].FechaCierre);
+        Assert.Null(resultado.Items[1].ActivoNombre);
+        Assert.Null(resultado.Items[1].SlaHoras);
+        Assert.Null(resultado.Items[1].FechaCierre);
+    }
+
+    [Fact]
+    public async Task ObtenerTodosAsync_UltimaPagina_HayMasEsFalse()
+    {
+        IReadOnlyList<Ticket> items = [TicketDemo(5)];
+        _ticketRepo.Setup(r => r.ObtenerPaginadoConJoinsAsync(
+                        3, 2, null, null, null, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync((items, 5));
+
+        var resultado = await _service.ObtenerTodosAsync(null, null, null, pagina: 3, tamano: 2);
+
+        Assert.Equal(5, resultado.TotalRegistros);
+        Assert.False(resultado.HayMas);
+    }
+
+    [Theory]
+    [InlineData(null, null, null)]
+    [InlineData(2, null, EstadoTicket.EnProgreso)]
+    [InlineData(null, 4, EstadoTicket.Resuelto)]
+    [InlineData(3, 7, null)]
+    public async Task ObtenerTodosAsync_FiltrosSePasanTalCualAlRepositorio(
+        int? clienteId, int? tecnicoId, EstadoTicket? estado)
+    {
+        _ticketRepo.Setup(r => r.ObtenerPaginadoConJoinsAsync(
+                        1, 10, clienteId, tecnicoId, estado, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync(((IReadOnlyList<Ticket>)[], 0));
+
+        await _service.ObtenerTodosAsync(clienteId, tecnicoId, estado, pagina: 1, tamano: 10);
+
+        _ticketRepo.Verify(r => r.ObtenerPaginadoConJoinsAsync(
+            1, 10, clienteId, tecnicoId, estado, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(0, 1)]
+    [InlineData(-5, 1)]
+    [InlineData(1, 1)]
+    [InlineData(100, 100)]
+    [InlineData(101, 100)]
+    [InlineData(5000, 100)]
+    public async Task ObtenerTodosAsync_TamanoSeAcotaEntre1Y100(int tamano, int esperado)
+    {
+        _ticketRepo.Setup(r => r.ObtenerPaginadoConJoinsAsync(
+                        1, esperado, null, null, null, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync(((IReadOnlyList<Ticket>)[], 0));
+
+        var resultado = await _service.ObtenerTodosAsync(null, null, null, pagina: 1, tamano: tamano);
+
+        Assert.Equal(esperado, resultado.TamanoPagina);
+        _ticketRepo.Verify(r => r.ObtenerPaginadoConJoinsAsync(
+            1, esperado, null, null, null, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(int.MinValue)]
+    public async Task ObtenerTodosAsync_PaginaCeroONegativa_SeSubeA1(int pagina)
+    {
+        _ticketRepo.Setup(r => r.ObtenerPaginadoConJoinsAsync(
+                        1, 20, null, null, null, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync(((IReadOnlyList<Ticket>)[], 0));
+
+        var resultado = await _service.ObtenerTodosAsync(null, null, null, pagina, tamano: 20);
+
+        Assert.Equal(1, resultado.Pagina);
+        _ticketRepo.Verify(r => r.ObtenerPaginadoConJoinsAsync(
+            1, 20, null, null, null, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ObtenerTodosAsync_PaginaEnorme_SeAcotaParaQueElOffsetNoDesborde()
+    {
+        const int esperada = int.MaxValue / 100;
+        _ticketRepo.Setup(r => r.ObtenerPaginadoConJoinsAsync(
+                        esperada, 100, null, null, null, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync(((IReadOnlyList<Ticket>)[], 0));
+
+        var resultado = await _service.ObtenerTodosAsync(null, null, null, pagina: int.MaxValue, tamano: 100);
+
+        Assert.Equal(esperada, resultado.Pagina);
+        _ticketRepo.Verify(r => r.ObtenerPaginadoConJoinsAsync(
+            esperada, 100, null, null, null, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
     // ------------------------------------------------------------ SLA (alertas)
 
     [Fact]

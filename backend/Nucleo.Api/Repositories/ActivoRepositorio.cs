@@ -18,7 +18,7 @@ public class ActivoRepositorio : Repositorio<Activo>, IActivoRepositorio
         if (clienteId is not null)
             query = query.Where(a => a.ClienteId == clienteId);
 
-        var ordenada = query.OrderBy(a => a.Nombre);
+        var ordenada = query.OrderBy(a => a.Nombre).ThenBy(a => a.Id);   // desempate: Nombre no es único
 
         var total = await ordenada.CountAsync(ct);
         var items = await ordenada.Skip((pagina - 1) * tamano).Take(tamano).ToListAsync(ct);

@@ -18,7 +18,7 @@ dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
 > ⚠️ Si la API está corriendo (`dotnet run`), detenla primero: el proceso bloquea
 > `Nucleo.Api.exe` y el build de los tests falla con MSB3027.
 
-**Estado actual: 61 pruebas, 61 pasando.**
+**Estado actual: 85 pruebas, 85 pasando.**
 
 ### Qué se prueba y qué no (diseño de la suite)
 
@@ -35,14 +35,14 @@ dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
 
 ### Cobertura por archivo
 
-#### `Domain/TransicionesTests.cs` (18 pruebas)
+#### `Domain/TransicionesTests.cs` (21 pruebas)
 
 | Máquina | Verifica |
 |---|---|
 | `EstadoActivoTransiciones` | Transiciones permitidas entre Operativo/EnReparacion/EnAlmacen; `Retirado` es terminal (0 salidas); mismo estado no es transición válida. |
 | `EstadoTicketTransiciones` | Flujo normal `Abierto→EnProgreso→Resuelto→Cerrado`; escape `Abierto→Cancelado`; no saltar pasos; no reabrir; `Cerrado`/`Cancelado` terminales. |
 
-#### `Services/ClienteServiceTests.cs` (9 pruebas)
+#### `Services/ClienteServiceTests.cs` (11 pruebas)
 
 | Caso | Regla verificada |
 |---|---|
@@ -53,8 +53,9 @@ dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
 | Eliminar con activos asociados | `ConflictoException`, `Eliminar` nunca se llama |
 | Eliminar sin activos | `Eliminar` + `GuardarCambiosAsync` exactamente una vez |
 | Lecturas | Mapeo entidad→DTO; inexistente devuelve `null` (el controller lo traduce a 404) |
+| Listar paginado: tope superior | `pagina = int.MaxValue`, `tamano = 100` → el repo recibe `int.MaxValue / 100` y `Pagina` lo refleja (evita desborde del offset) |
 
-#### `Services/ActivoServiceTests.cs` (11 pruebas) — **el corazón del proyecto**
+#### `Services/ActivoServiceTests.cs` (15 pruebas) — **el corazón del proyecto**
 
 | Caso | Regla verificada |
 |---|---|
@@ -66,11 +67,19 @@ dotnet test backend/Nucleo.Api.Tests/Nucleo.Api.Tests.csproj
 | **Rollback**: la auditoría falla con `SqlException` **547** (violación de FK real de SQL Server, fabricada vía reflexión en `Helpers/SqlExceptionFactory`) | Se traduce a `RecursoNoEncontradoException` (→404) con el id del técnico en el mensaje + rollback |
 | `DbUpdateException` que **no** es FK 547 | **No** se traduce a 404: va al catch genérico (rollback + rethrow) — verifica que el filtro `when` discrimina bien |
 | Historial | 404 si el activo no existe; mapeo incluye `TecnicoNombre` del join |
+| Listar paginado: tope superior | Igual que Cliente: `pagina = int.MaxValue` → `int.MaxValue / 100` en repo y respuesta |
 
-#### `Services/TicketServiceTests.cs` (14 pruebas)
+#### `Services/TicketServiceTests.cs` (32 pruebas)
 
 | Caso | Regla verificada |
 |---|---|
+| Listar paginado: mapeo y envoltura | `Items` mapeados (nombres de cliente/técnico), `TotalRegistros` = total del filtro del repo, `HayMas` correcto, filtros pasados al repo |
+| Listar paginado: mapeo extendido | `ActivoNombre`, `SlaHoras` y `FechaCierre` en los items (null cuando no hay activo/contrato/cierre) |
+| Listar paginado: última página | `HayMas` false cuando `pagina * tamano >= total` |
+| Listar paginado: filtros (4 casos) | `clienteId`/`tecnicoId`/`estado` llegan tal cual al repositorio |
+| Listar paginado: clamp de `tamano` (6 casos) | 0, -5 → 1; 100 → 100; 101, 5000 → 100; `TamanoPagina` de la respuesta acotado |
+| Listar paginado: `pagina` 0/negativa (3 casos) | Se sube a 1 (incluye `int.MinValue`) |
+| Listar paginado: tope superior | `pagina = int.MaxValue`, `tamano = 100` → `int.MaxValue / 100` en repo y respuesta |
 | Crear: cliente/técnico/activo inexistentes | 404 en cada caso |
 | Crear con activo de **otro** cliente | `ConflictoException` — la regla de negocio cruzada distintiva de Ticket |
 | Crear válido | Nace `Abierto`, `FechaCreacion` asignada, `FechaCierre` null |

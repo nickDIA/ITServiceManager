@@ -20,7 +20,7 @@ public class ClienteRepositorio : Repositorio<Cliente>, IClienteRepositorio
 
     public async Task<(IReadOnlyList<Cliente> Items, int Total)> ObtenerPaginadoAsync(int pagina, int tamano, CancellationToken ct = default)
     {
-        var query = _dbSet.AsNoTracking().OrderBy(c => c.Nombre);
+        var query = _dbSet.AsNoTracking().OrderBy(c => c.Nombre).ThenBy(c => c.Id);   // desempate: Nombre no es único
 
         var total = await query.CountAsync(ct);
         var items = await query.Skip((pagina - 1) * tamano).Take(tamano).ToListAsync(ct);

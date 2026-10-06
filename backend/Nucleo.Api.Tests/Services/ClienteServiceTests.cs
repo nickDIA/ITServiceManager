@@ -60,6 +60,19 @@ public class ClienteServiceTests
     }
 
     [Fact]
+    public async Task ObtenerTodosAsync_PaginaEnorme_SeAcotaParaQueElOffsetNoDesborde()
+    {
+        const int esperada = int.MaxValue / 100;
+        _repo.Setup(r => r.ObtenerPaginadoAsync(esperada, 100, It.IsAny<CancellationToken>()))
+             .ReturnsAsync(((IReadOnlyList<Cliente>)[], 0));
+
+        var resultado = await _service.ObtenerTodosAsync(int.MaxValue, 100);
+
+        Assert.Equal(esperada, resultado.Pagina);
+        _repo.Verify(r => r.ObtenerPaginadoAsync(esperada, 100, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
     public async Task ObtenerPorIdAsync_Inexistente_DevuelveNull()
     {
         _repo.Setup(r => r.ObtenerPorIdAsync(99, It.IsAny<CancellationToken>()))
