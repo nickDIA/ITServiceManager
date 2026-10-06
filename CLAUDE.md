@@ -28,6 +28,12 @@ Backend at `backend/Nucleo.Api` (ASP.NET Core, net10.0, EF Core + SQL Server Exp
 
 **Skills del proyecto** (`.claude/skills/`): `/nueva-migracion <Nombre>` (revisar modelo → generar → revisar el `.cs` → aplicar y verificar con `sqlcmd`) y `/validar-fase <cambio>` (API con los 3 roles + navegador real + axe/overflow → registro en `docs/TESTING.md`). Úsalas en vez de improvisar esos flujos.
 
+**Subagentes del proyecto** (`.claude/agents/`, modelo Sonnet, contexto aislado — devuelven un informe):
+- `revisor-capas` (solo lectura) — diff contra la regla de capas, autorización por rol y espejos backend↔frontend. Úsalo antes de commitear cambios de backend o `core/`.
+- `escritor-pruebas` — escribe y ejecuta pruebas xUnit + Moq con los patrones del proyecto; nunca toca código de producción.
+- `analista-consultas` (solo lectura + `SELECT` en SQL Server) — consultas EF a la escala de la prueba de estrés: sin tope, N+1, índices faltantes, agregación en C#.
+- `auditor-ui` — todas las rutas × 3 roles en navegador real (axe, overflow 375/1280, consola). Para un cambio puntual, mejor `/validar-fase`.
+
 ## Commands
 
 Run from repo root (`Nucleo.slnx` is the solution file, in the new .slnx XML format).
