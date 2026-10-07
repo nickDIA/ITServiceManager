@@ -34,6 +34,13 @@ Backend at `backend/Nucleo.Api` (ASP.NET Core, net10.0, EF Core + SQL Server Exp
 - `analista-consultas` (solo lectura + `SELECT` en SQL Server) — consultas EF a la escala de la prueba de estrés: sin tope, N+1, índices faltantes, agregación en C#.
 - `auditor-ui` — todas las rutas × 3 roles en navegador real (axe, overflow 375/1280, consola). Para un cambio puntual, mejor `/validar-fase`.
 
+**Hooks del proyecto** (`.claude/settings.json` → scripts Node en `.claude/hooks/`). Si uno te bloquea o te avisa, es intencional:
+- `api-bloquea-build` (antes de Bash/PowerShell) — **niega** `dotnet build/test/ef/run` mientras `Nucleo.Api.exe` corre (fallaría por archivo bloqueado). Detén la API y reintenta.
+- `proteger-migraciones` (antes de Edit/Write) — **pide confirmación** para editar `Data/Migrations/*`. Solo es legítimo corregir el `.cs` recién generado (ver `/nueva-migracion`); el snapshot nunca a mano.
+- `espejo-frontend` (después de Edit/Write) — inyecta un recordatorio al tocar `Domain/Estado*Transiciones.cs`, `Enums.cs`, `Models/DTOs/` o `nucleo.models.ts`.
+- `conteo-pruebas` (al terminar el turno) — si hay cambios en pruebas o en los documentos con el total, verifica que las 5 cifras coinciden con el conteo real (`[Fact]` + `[InlineData]`); si no, devuelve el turno para corregirlas.
+- `graphify-update` (al terminar el turno, en segundo plano) — corre `graphify update .` una vez si en el turno se editó `.cs`/`.ts`.
+
 ## Commands
 
 Run from repo root (`Nucleo.slnx` is the solution file, in the new .slnx XML format).
